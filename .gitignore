@@ -2,14 +2,67 @@
 .gradle/
 build/
 out/
+.gradle-cache/
+
+# Kotlin / Java
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+*.log
+hs_err_pid*
+replay_pid*
+
+# kotlin daemon
+.kotlin/
 
 # ide
 .idea/
 .ai/
 *.iml
+*.ipr
+*.iws
+
+# env
 .env
 .env.*
 !.env.example
+*.local
 
 # macOS
 .DS_Store
+.AppleDouble
+.LSOverride
+
+# logs
+logs/
+*.log
+
+# test / coverage
+coverage/
+test-results/
+htmlReport/
+jacoco/
+
+# temporary files
+tmp/
+temp/
+*.tmp
+*.swp
+*.swo
+
+# archives
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+
+# generated docs / artifacts
+docs/build/
+site/
+
+# OS / editor backups
+*~

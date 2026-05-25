@@ -1,0 +1,15 @@
+# gradle
+.gradle/
+build/
+out/
+
+# ide
+.idea/
+.ai/
+*.iml
+.env
+.env.*
+!.env.example
+
+# macOS
+.DS_Store

@@ -1,5 +1,6 @@
 # gradle
 .gradle/
+!.gradle/wrapper/
 build/
 out/
 .gradle-cache/
@@ -7,10 +8,10 @@ out/
 # Kotlin / Java
 *.class
 *.jar
+!gradle/wrapper/gradle-wrapper.jar
 *.war
 *.ear
 *.nar
-*.log
 hs_err_pid*
 replay_pid*
 

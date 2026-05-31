@@ -241,4 +241,27 @@ class LlmPlayerControllerTest {
         assertEquals(1, action.voterId)
         assertEquals(null, action.targetId)
     }
+
+    @Test
+    fun `chooseDaySpeech should use russian fallback when provider fails`() {
+        val provider = mockk<LlmProvider>()
+
+        coEvery {
+            provider.ask(any())
+        } throws RuntimeException("timeout")
+
+        val controller = LlmPlayerController(
+            provider = provider,
+            language = LlmLanguage.RU
+        )
+
+        val action = controller.chooseDaySpeech(
+            state = testState(),
+            playerId = 1
+        )
+
+        assertEquals(1, action.playerId)
+        assertEquals("Пока не уверен, нужно присмотреться.", action.message)
+        assertEquals(null, action.nominatedPlayerId)
+    }
 }

@@ -67,6 +67,9 @@ jobs:
       - name: Run LLM tests
         run: ./gradlew test --tests "neuromafia.llm.*" --tests "neuromafia.bot.LlmPlayerControllerTest" --no-daemon
 
+      - name: Run presentation tests
+        run: ./gradlew test --tests "neuromafia.present.*" --no-daemon
+
       - name: Run all tests
         run: ./gradlew test --no-daemon
 

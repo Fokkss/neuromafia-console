@@ -16,12 +16,12 @@ import neuromafia.core.model.GameMode
 import neuromafia.dev.DevLog
 import neuromafia.msg.Language
 import neuromafia.msg.Messages
-import neuromafia.present.PublicEventPrinter
 
 import neuromafia.llm.LlmLanguage
 import neuromafia.llm.StubLlmProvider
 import neuromafia.llm.openrouter.HttpClientFactory
 import neuromafia.llm.openrouter.OpenRouterProvider
+import neuromafia.present.PublicEventPrinter
 
 class NeuromafiaCommand : CliktCommand(
     name = "neuromafia"
@@ -186,8 +186,10 @@ class NeuromafiaCommand : CliktCommand(
             else -> error("Unknown bot type: $bot")
         }
 
-        PublicEventPrinter().printPublicEvents(finalState)
-        PublicEventPrinter().printGameSummary(finalState)
+        val publicEventPrinter = PublicEventPrinter(selectedLanguage)
+
+        publicEventPrinter.printPublicEvents(finalState)
+        publicEventPrinter.printGameSummary(finalState)
     }
 
     private fun printCreatedGame(config: GameConfig) {

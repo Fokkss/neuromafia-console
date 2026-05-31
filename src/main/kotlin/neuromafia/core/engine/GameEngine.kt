@@ -26,7 +26,7 @@ object GameEngine {
             "Killed player $playerId cannot speak."
         }
 
-        DevLog.info("Player $playerId says: $message")
+        DevLog.info("Recorded day speech from player $playerId")
 
         return state.copy(
             eventLog = state.eventLog + GameEvent.PlayerSpoke(

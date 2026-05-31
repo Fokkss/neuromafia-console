@@ -16,6 +16,8 @@ class PromptBuilder {
             systemPrompt = baseSystemPrompt(language),
             userPrompt = """
                 ${language.instruction()}
+                
+                ${jsonLanguageRule(language)}
 
                 You are Player ${player.id}.
                 Your role is ${player.role}.
@@ -62,6 +64,8 @@ class PromptBuilder {
             systemPrompt = baseSystemPrompt(language),
             userPrompt = """
                 ${language.instruction()}
+                
+                ${jsonLanguageRule(language)}
 
                 You are Player ${player.id}.
                 Your role is ${player.role}.
@@ -104,6 +108,8 @@ class PromptBuilder {
             systemPrompt = baseSystemPrompt(language),
             userPrompt = """
                 ${language.instruction()}
+                
+                ${jsonLanguageRule(language)}
 
                 You are Player ${player.id}.
                 Your role is ${player.role}.
@@ -160,5 +166,15 @@ class PromptBuilder {
 
     private fun publicPlayerLine(player: Player): String {
         return "Player ${player.id}: alive=${player.alive}"
+    }
+
+    private fun jsonLanguageRule(language: LlmLanguage): String {
+        return when (language) {
+            LlmLanguage.EN ->
+                "Important: publicReasoning and speech must be in English."
+
+            LlmLanguage.RU ->
+                "Важно: publicReasoning и speech должны быть на русском языке. Не пиши речь игрока на английском."
+        }
     }
 }

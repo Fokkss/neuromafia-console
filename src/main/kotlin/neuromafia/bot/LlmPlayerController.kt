@@ -9,12 +9,14 @@ import neuromafia.llm.LlmActionParser
 import neuromafia.llm.LlmLanguage
 import neuromafia.llm.LlmProvider
 import neuromafia.llm.PromptBuilder
+import kotlin.random.Random
 
 class LlmPlayerController(
     private val provider: LlmProvider,
     private val language: LlmLanguage,
     private val promptBuilder: PromptBuilder = PromptBuilder(),
-    private val parser: LlmActionParser = LlmActionParser()
+    private val parser: LlmActionParser = LlmActionParser(),
+    private val random: Random = Random.Default
 ) : PlayerController {
     override fun chooseDaySpeech(
         state: GameState,
@@ -235,11 +237,27 @@ class LlmPlayerController(
     }
 
     private fun askAndParse(request: neuromafia.llm.LlmRequest): neuromafia.llm.LlmActionResponse {
-        val response = runBlocking {
-            provider.ask(request)
-        }
+        return try {
+            DevLog.info("Sending request to LLM")
 
-        return parser.parse(response.content)
+            val response = runBlocking {
+                provider.ask(request)
+            }
+
+            DevLog.info("Received response from LLM")
+
+            try {
+                parser.parse(response.content)
+            } catch (exception: Exception) {
+                DevLog.info("Failed to parse LLM response, using fallback. Error: ${exception.message}")
+
+                fallbackActionResponse()
+            }
+        } catch (exception: Exception) {
+            DevLog.info("LLM request failed, using fallback. Error: ${exception.message}")
+
+            fallbackActionResponse()
+        }
     }
 
     private fun sanitizeDayVoteTarget(
@@ -292,6 +310,24 @@ class LlmPlayerController(
         return targetId
     }
 
+    private fun fallbackActionResponse(): neuromafia.llm.LlmActionResponse {
+        return when (language) {
+            LlmLanguage.EN -> neuromafia.llm.LlmActionResponse(
+                publicReasoning = "Fallback action because LLM response was invalid.",
+                speech = "I am not sure yet.",
+                targetId = null,
+                skip = true
+            )
+
+            LlmLanguage.RU -> neuromafia.llm.LlmActionResponse(
+                publicReasoning = "Запасное действие, потому что ответ LLM был некорректным.",
+                speech = "Пока не уверен, нужно присмотреться.",
+                targetId = null,
+                skip = true
+            )
+        }
+    }
+
     private fun requireTarget(
         targetId: Int?,
         allowedTargetIds: List<Int>
@@ -299,6 +335,12 @@ class LlmPlayerController(
         require(targetId != null) {
             "LLM did not return targetId."
         }
+
+        if (targetId in allowedTargetIds) {
+            return targetId!!
+        }
+
+        val fallbackTargetId = allowedTargetIds.random(random)
 
         require(targetId in allowedTargetIds) {
             "LLM returned targetId $targetId, but allowed targets are $allowedTargetIds."

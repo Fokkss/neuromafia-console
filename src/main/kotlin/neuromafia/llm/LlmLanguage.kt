@@ -6,8 +6,16 @@ enum class LlmLanguage {
 
     fun instruction(): String {
         return when (this) {
-            EN -> "Answer in English."
-            RU -> "Отвечай на русском языке."
+            EN -> """
+            Answer in English.
+            All JSON string fields, including publicReasoning and speech, must be written in English.
+        """.trimIndent()
+
+            RU -> """
+            Отвечай только на русском языке.
+            Все строковые поля JSON, включая publicReasoning и speech, должны быть написаны на русском языке.
+            Не используй английский язык в речи игрока.
+        """.trimIndent()
         }
     }
 

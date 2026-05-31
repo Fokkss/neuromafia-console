@@ -9,7 +9,10 @@ data class GameState(
     val dayNumber: Int = 1,
     val winner: Winner? = null,
     val nominatedPlayerIds: List<Int> = emptyList(),
-    val eventLog: List<GameEvent> = emptyList()
+    val eventLog: List<GameEvent> = emptyList(),
+    val pendingMafiaKillTargetId: Int? = null,
+    val pendingMafiaKillCandidateIds: List<Int> = emptyList(),
+    val godfatherCommissarChecks: Map<Int, Boolean> = emptyMap(),
 ) {
     val finished: Boolean
         get() = winner != null || phase == Phase.FINISHED
@@ -24,6 +27,10 @@ data class GameState(
 
     fun aliveCivilianTeamPlayers(): List<Player> {
         return alivePlayers().filter { it.role.team == Team.CIVILIANS }
+    }
+
+    fun aliveGodfather(): Player? {
+        return alivePlayers().firstOrNull { it.role == Role.GODFATHER }
     }
 
     fun playerById(id: Int): Player {

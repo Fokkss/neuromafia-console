@@ -8,6 +8,19 @@ sealed interface GameEvent {
         val dayNumber: Int
     ) : GameEvent
 
+    data class MafiaKillVoteRecorded(
+        val mafiaId: Int,
+        val targetId: Int
+    ) : GameEvent
+
+    data class MafiaKillTargetSelected(
+        val targetId: Int
+    ) : GameEvent
+
+    data class MafiaKillTie(
+        val candidateIds: List<Int>
+    ) : GameEvent
+
     data class GodfatherCommissarChecked(
         val godfatherId: Int,
         val targetId: Int,

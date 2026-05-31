@@ -78,7 +78,7 @@ class GameEngineTest {
     }
 
     @Test
-    fun `killPlayer should throw when player is already eliminated`() {
+    fun `killPlayer should throw when player is already killed`() {
         val state = defaultState().copy(
             players = defaultState().players.map { player ->
                 if (player.id == 1) {
@@ -99,7 +99,7 @@ class GameEngineTest {
     }
 
     @Test
-    fun `killPlayer should set civilians winner when last mafia is eliminated`() {
+    fun `killPlayer should set civilians winner when last mafia is killed`() {
         val state = defaultState()
 
         val updatedState = GameEngine.killPlayer(

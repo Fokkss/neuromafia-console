@@ -17,6 +17,16 @@ sealed interface PlayerAction {
         val targetId: Int
     ) : PlayerAction
 
+    data class GodfatherKillDecision(
+        val godfatherId: Int,
+        val targetId: Int
+    ) : PlayerAction
+
+    data class GodfatherCommissarCheck(
+        val godfatherId: Int,
+        val targetId: Int
+    ) : PlayerAction
+
     data class CommissarCheck(
         val commissarId: Int,
         val targetId: Int

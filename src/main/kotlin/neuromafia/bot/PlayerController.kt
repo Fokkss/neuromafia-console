@@ -20,6 +20,17 @@ interface PlayerController {
         playerId: Int
     ): PlayerAction.MafiaKillVote
 
+    fun chooseGodfatherKillDecision(
+        state: GameState,
+        playerId: Int,
+        candidateIds: List<Int>
+    ): PlayerAction.GodfatherKillDecision
+
+    fun chooseGodfatherCommissarCheck(
+        state: GameState,
+        playerId: Int
+    ): PlayerAction.GodfatherCommissarCheck
+
     fun chooseCommissarCheck(
         state: GameState,
         playerId: Int
@@ -47,10 +58,12 @@ class ScriptedPlayerController(
     private val daySpeeches: MutableList<PlayerAction.DaySpeech> = mutableListOf(),
     private val dayVotes: MutableList<PlayerAction.DayVote> = mutableListOf(),
     private val mafiaKillVotes: MutableList<PlayerAction.MafiaKillVote> = mutableListOf(),
+    private val godfatherKillDecisions: MutableList<PlayerAction.GodfatherKillDecision> = mutableListOf(),
+    private val godfatherCommissarChecks: MutableList<PlayerAction.GodfatherCommissarCheck> = mutableListOf(),
     private val commissarChecks: MutableList<PlayerAction.CommissarCheck> = mutableListOf(),
     private val doctorHeals: MutableList<PlayerAction.DoctorHeal> = mutableListOf(),
-    private val maniacKills: MutableList<PlayerAction.ManiacKill> = mutableListOf(),
-    private val escortBlocks: MutableList<PlayerAction.EscortBlock> = mutableListOf()
+    private val escortBlocks: MutableList<PlayerAction.EscortBlock> = mutableListOf(),
+    private val maniacKills: MutableList<PlayerAction.ManiacKill> = mutableListOf()
 ) : PlayerController {
     override fun chooseDaySpeech(
         state: GameState,
@@ -74,6 +87,21 @@ class ScriptedPlayerController(
         return mafiaKillVotes.removeFirst()
     }
 
+    override fun chooseGodfatherKillDecision(
+        state: GameState,
+        playerId: Int,
+        candidateIds: List<Int>
+    ): PlayerAction.GodfatherKillDecision {
+        return godfatherKillDecisions.removeFirst()
+    }
+
+    override fun chooseGodfatherCommissarCheck(
+        state: GameState,
+        playerId: Int
+    ): PlayerAction.GodfatherCommissarCheck {
+        return godfatherCommissarChecks.removeFirst()
+    }
+
     override fun chooseCommissarCheck(
         state: GameState,
         playerId: Int
@@ -88,17 +116,17 @@ class ScriptedPlayerController(
         return doctorHeals.removeFirst()
     }
 
-    override fun chooseManiacKill(
-        state: GameState,
-        playerId: Int
-    ): PlayerAction.ManiacKill {
-        return maniacKills.removeFirst()
-    }
-
     override fun chooseEscortBlock(
         state: GameState,
         playerId: Int
     ): PlayerAction.EscortBlock {
         return escortBlocks.removeFirst()
+    }
+
+    override fun chooseManiacKill(
+        state: GameState,
+        playerId: Int
+    ): PlayerAction.ManiacKill {
+        return maniacKills.removeFirst()
     }
 }

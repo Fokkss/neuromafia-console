@@ -2,6 +2,23 @@ package neuromafia.core.model
 
 
 sealed interface GameEvent {
+    data class PhaseChanged(
+        val from: Phase,
+        val to: Phase,
+        val dayNumber: Int
+    ) : GameEvent
+
+    data class GodfatherCommissarChecked(
+        val godfatherId: Int,
+        val targetId: Int,
+        val isCommissar: Boolean
+    ) : GameEvent
+
+    data class GodfatherKillDecisionMade(
+        val godfatherId: Int,
+        val targetId: Int
+    ) : GameEvent
+
     data class PlayerSpoke(
         val playerId: Int,
         val message: String

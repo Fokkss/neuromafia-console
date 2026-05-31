@@ -20,20 +20,16 @@ class DayCycleRunner(
 
         DevLog.info("Day cycle started, day ${state.dayNumber}")
 
-        var currentState = state
-
-        var previousState = currentState
-        currentState = DayDiscussionRunner(
+        var currentState = DayDiscussionRunner(
             controllersByPlayerId = controllersByPlayerId,
             onStateChanged = onStateChanged
-        ).runDiscussion(currentState)
-        onStateChanged(previousState, currentState)
+        ).runDiscussion(state)
 
         if (currentState.finished) {
             return currentState
         }
 
-        previousState = currentState
+        var previousState = currentState
         currentState = PhaseManager.startDayVoting(currentState)
         onStateChanged(previousState, currentState)
 
@@ -43,7 +39,6 @@ class DayCycleRunner(
             onStateChanged = onStateChanged
         ).runVoting(currentState)
         currentState = votingResult.first
-        onStateChanged(previousState, currentState)
 
         if (currentState.finished) {
             return currentState

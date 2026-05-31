@@ -96,11 +96,15 @@ class DayVotingRunner(
         if (leaders.size != 1) {
             DevLog.info("Day voting tie between $leaders")
 
+            val previousState = currentState
+
             val tiedState = currentState.copy(
                 eventLog = currentState.eventLog + GameEvent.DayVotingTie(
                     candidateIds = leaders
                 )
             )
+
+            onStateChanged(previousState, tiedState)
 
             return tiedState to DayVoting.Tie(
                 candidateIds = leaders
@@ -111,11 +115,15 @@ class DayVotingRunner(
 
         DevLog.info("Day voting killed player $killedPlayerId")
 
+        val previousState = currentState
+
         val updatedState = GameEngine.killPlayer(
             state = currentState,
             playerId = killedPlayerId,
             reason = KillReason.DAY_VOTE
         )
+
+        onStateChanged(previousState, updatedState)
 
         return updatedState to DayVoting.Killed(
             playerId = killedPlayerId

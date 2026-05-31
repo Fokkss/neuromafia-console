@@ -332,8 +332,8 @@ class LlmPlayerController(
         targetId: Int?,
         allowedTargetIds: List<Int>
     ): Int {
-        require(targetId != null) {
-            "LLM did not return targetId."
+        require(allowedTargetIds.isNotEmpty()) {
+            "No allowed targets."
         }
 
         if (targetId in allowedTargetIds) {
@@ -342,10 +342,10 @@ class LlmPlayerController(
 
         val fallbackTargetId = allowedTargetIds.random(random)
 
-        require(targetId in allowedTargetIds) {
-            "LLM returned targetId $targetId, but allowed targets are $allowedTargetIds."
-        }
+        DevLog.info(
+            "LLM returned invalid targetId=$targetId, fallback targetId=$fallbackTargetId"
+        )
 
-        return targetId
+        return fallbackTargetId
     }
 }

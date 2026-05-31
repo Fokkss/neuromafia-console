@@ -20,29 +20,19 @@ class GameRoundRunner(
 
         DevLog.info("Game round started, day ${state.dayNumber}")
 
-        var currentState = state
-
-        val beforeDay = currentState
-
-        currentState = DayCycleRunner(
+        var currentState = DayCycleRunner(
             controllersByPlayerId = controllersByPlayerId,
             onStateChanged = onStateChanged
-        ).runDay(currentState)
-
-        onStateChanged(beforeDay, currentState)
+        ).runDay(state)
 
         if (currentState.finished) {
             return currentState
         }
 
-        val beforeNight = currentState
-
         currentState = NightCycleRunner(
             controllersByPlayerId = controllersByPlayerId,
             onStateChanged = onStateChanged
         ).runNight(currentState)
-
-        onStateChanged(beforeNight, currentState)
 
         DevLog.info("Game round finished")
 

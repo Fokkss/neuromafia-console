@@ -24,14 +24,10 @@ class GameLoopRunner(
 
             DevLog.info("Running round $round")
 
-            val previousState = currentState
-
             currentState = GameRoundRunner(
                 controllersByPlayerId = controllersByPlayerId,
                 onStateChanged = onStateChanged
             ).runRound(currentState)
-
-            onStateChanged(previousState, currentState)
         }
 
         return currentState

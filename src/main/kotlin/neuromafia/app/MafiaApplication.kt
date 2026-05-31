@@ -9,6 +9,10 @@ import neuromafia.core.model.GameConfig
 import neuromafia.core.model.GameState
 import neuromafia.dev.DevLog
 
+import neuromafia.bot.LlmPlayerController
+import neuromafia.llm.LlmLanguage
+import neuromafia.llm.LlmProvider
+
 class MafiaApplication {
     fun runRandomGame(
         config: GameConfig,
@@ -32,6 +36,33 @@ class MafiaApplication {
         )
 
         DevLog.info("Starting game loop")
+
+        return GameLoopRunner(
+            controllersByPlayerId = controllersByPlayerId
+        ).runUntilFinished(
+            initialState = initialState,
+            maxRounds = maxRounds
+        )
+    }
+
+    fun runLlmGame(
+        config: GameConfig,
+        maxRounds: Int,
+        provider: LlmProvider,
+        language: LlmLanguage
+    ): GameState {
+        require(maxRounds > 0) {
+            "Max rounds must be positive."
+        }
+
+        val initialState = GameFactory.create(config)
+
+        val controllersByPlayerId = initialState.players.associate { player ->
+            player.id to LlmPlayerController(
+                provider = provider,
+                language = language
+            ) as PlayerController
+        }
 
         return GameLoopRunner(
             controllersByPlayerId = controllersByPlayerId

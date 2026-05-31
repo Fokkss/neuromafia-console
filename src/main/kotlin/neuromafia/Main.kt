@@ -18,6 +18,9 @@ import neuromafia.msg.Language
 import neuromafia.msg.Messages
 import neuromafia.present.PublicEventPrinter
 
+import neuromafia.llm.LlmLanguage
+import neuromafia.llm.StubLlmProvider
+
 class NeuromafiaCommand : CliktCommand(
     name = "neuromafia"
 ) {
@@ -42,8 +45,8 @@ class NeuromafiaCommand : CliktCommand(
 
     private val bot: String by option(
         "--bot",
-        help = "Bot type: random or stub."
-    ).choice("random", "stub").default("random")
+        help = "Bot type: random, llm or stub."
+    ).choice("random", "llm", "stub").default("random")
 
     private val maxRounds: Int by option(
         "--max-rounds",
@@ -133,14 +136,30 @@ class NeuromafiaCommand : CliktCommand(
             return
         }
 
-        require(bot == "random") {
-            "Only random bot is supported right now."
-        }
+        val finalState = when (bot) {
+            "random" -> MafiaApplication().runRandomGame(
+                config = config,
+                maxRounds = maxRounds
+            )
 
-        val finalState = MafiaApplication().runRandomGame(
-            config = config,
-            maxRounds = maxRounds
-        )
+            "llm", "stub" -> MafiaApplication().runLlmGame(
+                config = config,
+                maxRounds = maxRounds,
+                provider = StubLlmProvider(
+                    response = """
+                {
+                  "publicReasoning": "Stub LLM makes a safe default move.",
+                  "speech": "I am watching the table carefully.",
+                  "targetId": null,
+                  "skip": true
+                }
+            """.trimIndent()
+                ),
+                language = LlmLanguage.fromCliValue(language)
+            )
+
+            else -> error("Unknown bot type: $bot")
+        }
 
         PublicEventPrinter().printPublicEvents(finalState)
         PublicEventPrinter().printGameSummary(finalState)

@@ -1,4 +1,4 @@
-name: Main CI Pipeline
+name: Mafia CI Pipeline
 
 on:
   push:

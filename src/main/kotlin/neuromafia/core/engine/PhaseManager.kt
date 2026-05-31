@@ -78,7 +78,15 @@ object PhaseManager {
         val newDayNumber = state.dayNumber + 1
 
         val mutedPlayerIds = state.escortVisitedPlayerId
-            ?.let { setOf(it) }
+            ?.let { playerId ->
+                val visitedPlayer = state.playerById(playerId)
+
+                if (visitedPlayer.alive) {
+                    setOf(playerId)
+                } else {
+                    emptySet()
+                }
+            }
             ?: emptySet()
 
         val muteEvents = mutedPlayerIds.map { playerId ->

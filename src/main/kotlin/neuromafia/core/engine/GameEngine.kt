@@ -7,6 +7,35 @@ import neuromafia.core.model.Phase
 import neuromafia.dev.DevLog
 
 object GameEngine {
+    fun recordDaySpeech(
+        state: GameState,
+        playerId: Int,
+        message: String
+    ): GameState {
+        require(!state.finished) {
+            "Cannot record speech after game is finished."
+        }
+
+        require(state.phase == Phase.DAY_DISCUSSION) {
+            "Player can speak only during day discussion."
+        }
+
+        val player = state.playerById(playerId)
+
+        require(player.alive) {
+            "Killed player $playerId cannot speak."
+        }
+
+        DevLog.info("Player $playerId says: $message")
+
+        return state.copy(
+            eventLog = state.eventLog + GameEvent.PlayerSpoke(
+                playerId = playerId,
+                message = message
+            )
+        )
+    }
+
     fun killPlayer(
         state: GameState,
         playerId: Int,

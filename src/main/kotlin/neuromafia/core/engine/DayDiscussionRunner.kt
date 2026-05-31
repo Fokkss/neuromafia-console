@@ -45,11 +45,20 @@ class DayDiscussionRunner(
             )
 
             if (action.nominatedPlayerId != null) {
-                currentState = GameEngine.nominatePlayer(
-                    state = currentState,
-                    speakerId = action.playerId,
-                    nominatedPlayerId = action.nominatedPlayerId
-                )
+                currentState = try {
+                    GameEngine.nominatePlayer(
+                        state = currentState,
+                        speakerId = action.playerId,
+                        nominatedPlayerId = action.nominatedPlayerId
+                    )
+                } catch (exception: IllegalArgumentException) {
+                    DevLog.info(
+                        "Invalid nomination from player ${action.playerId}: " +
+                                "${action.nominatedPlayerId}. Reason: ${exception.message}"
+                    )
+
+                    currentState
+                }
             }
         }
 

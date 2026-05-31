@@ -168,4 +168,77 @@ class LlmPlayerControllerTest {
             players = players
         )
     }
+
+    @Test
+    fun `chooseDaySpeech should ignore killed nominated target`() {
+        val provider = mockk<LlmProvider>()
+
+        coEvery {
+            provider.ask(any())
+        } returns LlmResponse(
+            content = """
+            {
+              "publicReasoning": "I suspect Player 4.",
+              "speech": "I nominate Player 4.",
+              "targetId": 4,
+              "skip": false
+            }
+        """.trimIndent()
+        )
+
+        val controller = LlmPlayerController(
+            provider = provider,
+            language = LlmLanguage.EN
+        )
+
+        val state = testState().copy(
+            players = testState().players.map { player ->
+                if (player.id == 4) {
+                    player.copy(alive = false)
+                } else {
+                    player
+                }
+            }
+        )
+
+        val action = controller.chooseDaySpeech(
+            state = state,
+            playerId = 1
+        )
+
+        assertEquals("I nominate Player 4.", action.message)
+        assertEquals(null, action.nominatedPlayerId)
+    }
+
+    @Test
+    fun `chooseDayVote should skip vote for non nominated target`() {
+        val provider = mockk<LlmProvider>()
+
+        coEvery {
+            provider.ask(any())
+        } returns LlmResponse(
+            content = """
+            {
+              "publicReasoning": "I want to vote Player 5.",
+              "speech": null,
+              "targetId": 5,
+              "skip": false
+            }
+        """.trimIndent()
+        )
+
+        val controller = LlmPlayerController(
+            provider = provider,
+            language = LlmLanguage.EN
+        )
+
+        val action = controller.chooseDayVote(
+            state = testState(),
+            playerId = 1,
+            nominatedPlayerIds = listOf(3, 4)
+        )
+
+        assertEquals(1, action.voterId)
+        assertEquals(null, action.targetId)
+    }
 }

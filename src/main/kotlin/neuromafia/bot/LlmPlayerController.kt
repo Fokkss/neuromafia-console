@@ -4,6 +4,7 @@ import kotlinx.coroutines.runBlocking
 import neuromafia.core.action.PlayerAction
 import neuromafia.core.model.GameState
 import neuromafia.core.model.Team
+import neuromafia.dev.DevLog
 import neuromafia.llm.LlmActionParser
 import neuromafia.llm.LlmLanguage
 import neuromafia.llm.LlmProvider
@@ -27,10 +28,16 @@ class LlmPlayerController(
             )
         )
 
+        val nominationTargetId = sanitizeDayNominationTarget(
+            state = state,
+            playerId = playerId,
+            targetId = parsed.targetId
+        )
+
         return PlayerAction.DaySpeech(
             playerId = playerId,
             message = parsed.speech ?: parsed.publicReasoning,
-            nominatedPlayerId = parsed.targetId
+            nominatedPlayerId = nominationTargetId
         )
     }
 
@@ -51,7 +58,10 @@ class LlmPlayerController(
         val targetId = if (parsed.skip) {
             null
         } else {
-            parsed.targetId
+            sanitizeDayVoteTarget(
+                targetId = parsed.targetId,
+                nominatedPlayerIds = nominatedPlayerIds
+            )
         }
 
         return PlayerAction.DayVote(
@@ -230,6 +240,56 @@ class LlmPlayerController(
         }
 
         return parser.parse(response.content)
+    }
+
+    private fun sanitizeDayVoteTarget(
+        targetId: Int?,
+        nominatedPlayerIds: List<Int>
+    ): Int? {
+        if (targetId == null) {
+            return null
+        }
+
+        if (targetId !in nominatedPlayerIds) {
+            DevLog.info("LLM voted for non-nominated player $targetId, vote skipped")
+            return null
+        }
+
+        return targetId
+    }
+
+    private fun sanitizeDayNominationTarget(
+        state: GameState,
+        playerId: Int,
+        targetId: Int?
+    ): Int? {
+        if (targetId == null) {
+            return null
+        }
+
+        val target = state.players.firstOrNull { it.id == targetId }
+
+        if (target == null) {
+            DevLog.info("LLM nominated unknown player $targetId, nomination ignored")
+            return null
+        }
+
+        if (!target.alive) {
+            DevLog.info("LLM nominated killed player $targetId, nomination ignored")
+            return null
+        }
+
+        if (targetId == playerId) {
+            DevLog.info("LLM tried to nominate itself, nomination ignored")
+            return null
+        }
+
+        if (targetId in state.nominatedPlayerIds) {
+            DevLog.info("LLM nominated already nominated player $targetId, nomination ignored")
+            return null
+        }
+
+        return targetId
     }
 
     private fun requireTarget(

@@ -36,6 +36,8 @@ dependencies {
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.mockk)
 
+    testImplementation("io.ktor:ktor-client-mock:3.5.0")
+
     testImplementation(kotlin("test-junit5"))
     testRuntimeOnly("org.junit.platform:junit-platform-launcher:6.1.0")
 }

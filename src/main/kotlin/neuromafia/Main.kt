@@ -20,6 +20,8 @@ import neuromafia.present.PublicEventPrinter
 
 import neuromafia.llm.LlmLanguage
 import neuromafia.llm.StubLlmProvider
+import neuromafia.llm.openrouter.HttpClientFactory
+import neuromafia.llm.openrouter.OpenRouterProvider
 
 class NeuromafiaCommand : CliktCommand(
     name = "neuromafia"
@@ -142,21 +144,44 @@ class NeuromafiaCommand : CliktCommand(
                 maxRounds = maxRounds
             )
 
-            "llm", "stub" -> MafiaApplication().runLlmGame(
+            "stub" -> MafiaApplication().runLlmGame(
                 config = config,
                 maxRounds = maxRounds,
                 provider = StubLlmProvider(
                     response = """
                 {
-                  "publicReasoning": "Stub LLM makes a safe default move.",
-                  "speech": "I am watching the table carefully.",
-                  "targetId": null,
-                  "skip": true
+                  "publicReasoning": "Stub LLM chooses Player 1 as a fallback.",
+                  "speech": "I am watching carefully.",
+                  "targetId": 1,
+                  "skip": false
                 }
             """.trimIndent()
                 ),
                 language = LlmLanguage.fromCliValue(language)
             )
+
+            "llm" -> {
+                require(provider == "openrouter") {
+                    "Only OpenRouter provider is supported now. Use --provider openrouter."
+                }
+
+                val httpClient = HttpClientFactory.create()
+
+                try {
+                    MafiaApplication().runLlmGame(
+                        config = config,
+                        maxRounds = maxRounds,
+                        provider = OpenRouterProvider(
+                            apiKey = OpenRouterProvider.apiKeyFromEnvironment(),
+                            model = model,
+                            client = httpClient
+                        ),
+                        language = LlmLanguage.fromCliValue(language)
+                    )
+                } finally {
+                    httpClient.close()
+                }
+            }
 
             else -> error("Unknown bot type: $bot")
         }

@@ -49,8 +49,23 @@ jobs:
           test -f gradle/wrapper/gradle-wrapper.jar
           test -f gradle/wrapper/gradle-wrapper.properties
 
-      - name: Build and run tests
-        run: ./gradlew clean build --no-daemon
+      - name: Compile main sources
+        run: ./gradlew compileKotlin --no-daemon
+
+      - name: Compile test sources
+        run: ./gradlew compileTestKotlin --no-daemon
+
+      - name: Run core engine tests
+        run: ./gradlew test --tests "neuromafia.core.engine.*" --no-daemon
+
+      - name: Run bot tests
+        run: ./gradlew test --tests "neuromafia.bot.*" --no-daemon
+
+      - name: Run all tests
+        run: ./gradlew test --no-daemon
+
+      - name: Build distribution
+        run: ./gradlew build -x test --no-daemon
 
       - name: Upload test report
         if: always()

@@ -61,6 +61,9 @@ jobs:
       - name: Run bot tests
         run: ./gradlew test --tests "neuromafia.bot.*" --no-daemon
 
+      - name: Run app tests
+        run: ./gradlew test --tests "neuromafia.app.*" --no-daemon
+
       - name: Run all tests
         run: ./gradlew test --no-daemon
 

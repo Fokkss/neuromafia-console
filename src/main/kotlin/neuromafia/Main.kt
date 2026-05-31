@@ -138,10 +138,24 @@ class NeuromafiaCommand : CliktCommand(
             return
         }
 
+        val publicEventPrinter = PublicEventPrinter(selectedLanguage)
+
+        echo("")
+        publicEventPrinter.printHeader()
+
+        val onStateChanged = { previousState: neuromafia.core.model.GameState,
+                               currentState: neuromafia.core.model.GameState ->
+            publicEventPrinter.printNewPublicEvents(
+                previousState = previousState,
+                currentState = currentState
+            )
+        }
+
         val finalState = when (bot) {
             "random" -> MafiaApplication().runRandomGame(
                 config = config,
-                maxRounds = maxRounds
+                maxRounds = maxRounds,
+                onStateChanged = onStateChanged
             )
 
             "stub" -> MafiaApplication().runLlmGame(
@@ -157,7 +171,8 @@ class NeuromafiaCommand : CliktCommand(
                 }
             """.trimIndent()
                 ),
-                language = LlmLanguage.fromCliValue(language)
+                language = LlmLanguage.fromCliValue(language),
+                onStateChanged = onStateChanged
             )
 
             "llm" -> {
@@ -176,7 +191,8 @@ class NeuromafiaCommand : CliktCommand(
                             model = model,
                             client = httpClient
                         ),
-                        language = LlmLanguage.fromCliValue(language)
+                        language = LlmLanguage.fromCliValue(language),
+                        onStateChanged = onStateChanged
                     )
                 } finally {
                     httpClient.close()
@@ -186,9 +202,6 @@ class NeuromafiaCommand : CliktCommand(
             else -> error("Unknown bot type: $bot")
         }
 
-        val publicEventPrinter = PublicEventPrinter(selectedLanguage)
-
-        publicEventPrinter.printPublicEvents(finalState)
         publicEventPrinter.printGameSummary(finalState)
     }
 

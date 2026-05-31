@@ -6,7 +6,8 @@ import neuromafia.core.model.Phase
 import neuromafia.dev.DevLog
 
 class DayDiscussionRunner(
-    private val controllersByPlayerId: Map<Int, PlayerController>
+    private val controllersByPlayerId: Map<Int, PlayerController>,
+    private val onStateChanged: (previousState: GameState, currentState: GameState) -> Unit = { _, _ -> }
 ) {
     fun runDiscussion(state: GameState): GameState {
         require(!state.finished) {
@@ -38,13 +39,19 @@ class DayDiscussionRunner(
                 "Controller for player ${speaker.id} returned action for player ${action.playerId}."
             }
 
+            var previousState = currentState
+
             currentState = GameEngine.recordDaySpeech(
                 state = currentState,
                 playerId = action.playerId,
                 message = action.message
             )
 
+            onStateChanged(previousState, currentState)
+
             if (action.nominatedPlayerId != null) {
+                previousState = currentState
+
                 currentState = try {
                     GameEngine.nominatePlayer(
                         state = currentState,
@@ -59,6 +66,8 @@ class DayDiscussionRunner(
 
                     currentState
                 }
+
+                onStateChanged(previousState, currentState)
             }
         }
 

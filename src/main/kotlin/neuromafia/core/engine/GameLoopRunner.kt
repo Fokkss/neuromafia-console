@@ -5,7 +5,8 @@ import neuromafia.core.model.GameState
 import neuromafia.dev.DevLog
 
 class GameLoopRunner(
-    private val controllersByPlayerId: Map<Int, PlayerController>
+    private val controllersByPlayerId: Map<Int, PlayerController>,
+    private val onStateChanged: (previousState: GameState, currentState: GameState) -> Unit = { _, _ -> }
 ) {
     fun runUntilFinished(
         initialState: GameState,
@@ -23,9 +24,14 @@ class GameLoopRunner(
 
             DevLog.info("Running round $round")
 
+            val previousState = currentState
+
             currentState = GameRoundRunner(
-                controllersByPlayerId = controllersByPlayerId
+                controllersByPlayerId = controllersByPlayerId,
+                onStateChanged = onStateChanged
             ).runRound(currentState)
+
+            onStateChanged(previousState, currentState)
         }
 
         return currentState

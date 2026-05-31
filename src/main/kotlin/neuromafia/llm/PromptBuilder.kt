@@ -4,7 +4,9 @@ import neuromafia.core.model.GameState
 import neuromafia.core.model.Player
 import neuromafia.core.model.Role
 
-class PromptBuilder {
+class PromptBuilder (
+    private val historyFormatter: PromptHistoryFormatter = PromptHistoryFormatter()
+){
     fun buildDaySpeechRequest(
         state: GameState,
         playerId: Int,
@@ -26,6 +28,9 @@ class PromptBuilder {
 
                 Alive players:
                 ${alivePlayersText(state)}
+                
+                Public history:
+                ${historyFormatter.formatPublicHistory(state, language)}
 
                 Already nominated players:
                 ${state.nominatedPlayerIds.ifEmpty { listOf("none") }}
@@ -74,6 +79,9 @@ class PromptBuilder {
 
                 Alive players:
                 ${alivePlayersText(state)}
+                
+                Public history:
+                ${historyFormatter.formatPublicHistory(state, language)}
 
                 You can vote only for nominated players:
                 $nominatedPlayerIds
@@ -118,6 +126,9 @@ class PromptBuilder {
 
                 Alive players:
                 ${alivePlayersText(state)}
+                
+                Public history:
+                ${historyFormatter.formatPublicHistory(state, language)}
 
                 Allowed target ids:
                 $allowedTargetIds

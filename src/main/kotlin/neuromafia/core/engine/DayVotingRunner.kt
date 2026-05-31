@@ -8,7 +8,8 @@ import neuromafia.core.model.Phase
 import neuromafia.dev.DevLog
 
 class DayVotingRunner(
-    private val controllersByPlayerId: Map<Int, PlayerController>
+    private val controllersByPlayerId: Map<Int, PlayerController>,
+    private val onStateChanged: (previousState: GameState, currentState: GameState) -> Unit = { _, _ -> }
 ) {
     fun runVoting(state: GameState): Pair<GameState, DayVoting> {
         require(!state.finished) {
@@ -67,12 +68,16 @@ class DayVotingRunner(
                 votesByTargetId[action.targetId] = votesByTargetId.getOrDefault(action.targetId, 0) + 1
             }
 
+            val previousState = currentState
+
             currentState = currentState.copy(
                 eventLog = currentState.eventLog + GameEvent.PlayerVoted(
                     voterId = action.voterId,
                     targetId = action.targetId
                 )
             )
+
+            onStateChanged(previousState, currentState)
         }
 
         if (votesByTargetId.isEmpty()) {

@@ -6,7 +6,8 @@ import neuromafia.core.model.Phase
 import neuromafia.dev.DevLog
 
 class GameRoundRunner(
-    private val controllersByPlayerId: Map<Int, PlayerController>
+    private val controllersByPlayerId: Map<Int, PlayerController>,
+    private val onStateChanged: (previousState: GameState, currentState: GameState) -> Unit = { _, _ -> }
 ) {
     fun runRound(state: GameState): GameState {
         require(!state.finished) {
@@ -19,17 +20,29 @@ class GameRoundRunner(
 
         DevLog.info("Game round started, day ${state.dayNumber}")
 
-        var currentState = DayCycleRunner(
-            controllersByPlayerId = controllersByPlayerId
-        ).runDay(state)
+        var currentState = state
+
+        val beforeDay = currentState
+
+        currentState = DayCycleRunner(
+            controllersByPlayerId = controllersByPlayerId,
+            onStateChanged = onStateChanged
+        ).runDay(currentState)
+
+        onStateChanged(beforeDay, currentState)
 
         if (currentState.finished) {
             return currentState
         }
 
+        val beforeNight = currentState
+
         currentState = NightCycleRunner(
-            controllersByPlayerId = controllersByPlayerId
+            controllersByPlayerId = controllersByPlayerId,
+            onStateChanged = onStateChanged
         ).runNight(currentState)
+
+        onStateChanged(beforeNight, currentState)
 
         DevLog.info("Game round finished")
 

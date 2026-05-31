@@ -17,7 +17,9 @@ class MafiaApplication {
     fun runRandomGame(
         config: GameConfig,
         maxRounds: Int,
-        random: Random = Random.Default
+        random: Random = Random.Default,
+        onStateChanged: (previousState: GameState, currentState: GameState) -> Unit = { _, _ -> }
+
     ): GameState {
         require(maxRounds > 0) {
             "Max rounds must be positive."
@@ -38,7 +40,8 @@ class MafiaApplication {
         DevLog.info("Starting game loop")
 
         return GameLoopRunner(
-            controllersByPlayerId = controllersByPlayerId
+            controllersByPlayerId = controllersByPlayerId,
+            onStateChanged = onStateChanged
         ).runUntilFinished(
             initialState = initialState,
             maxRounds = maxRounds
@@ -49,7 +52,8 @@ class MafiaApplication {
         config: GameConfig,
         maxRounds: Int,
         provider: LlmProvider,
-        language: LlmLanguage
+        language: LlmLanguage,
+        onStateChanged: (previousState: GameState, currentState: GameState) -> Unit = { _, _ -> }
     ): GameState {
         require(maxRounds > 0) {
             "Max rounds must be positive."
@@ -65,7 +69,8 @@ class MafiaApplication {
         }
 
         return GameLoopRunner(
-            controllersByPlayerId = controllersByPlayerId
+            controllersByPlayerId = controllersByPlayerId,
+            onStateChanged = onStateChanged
         ).runUntilFinished(
             initialState = initialState,
             maxRounds = maxRounds

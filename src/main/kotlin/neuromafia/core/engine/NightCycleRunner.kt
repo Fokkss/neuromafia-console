@@ -6,7 +6,8 @@ import neuromafia.core.model.Phase
 import neuromafia.dev.DevLog
 
 class NightCycleRunner(
-    private val controllersByPlayerId: Map<Int, PlayerController>
+    private val controllersByPlayerId: Map<Int, PlayerController>,
+    private val onStateChanged: (previousState: GameState, currentState: GameState) -> Unit = { _, _ -> }
 ) {
     fun runNight(state: GameState): GameState {
         require(!state.finished) {
@@ -21,50 +22,76 @@ class NightCycleRunner(
 
         var currentState = state
 
-        currentState = NightMafiaRunner(
-            controllersByPlayerId = controllersByPlayerId
-        ).runMafiaKillVoting(currentState)
+        currentState = runStep(currentState) {
+            NightMafiaRunner(controllersByPlayerId).runMafiaKillVoting(it)
+        }
 
-        currentState = PhaseManager.finishCurrentNightPhase(currentState)
+        currentState = runStep(currentState) {
+            PhaseManager.finishCurrentNightPhase(it)
+        }
 
-        currentState = GodfatherRunner(
-            controllersByPlayerId = controllersByPlayerId
-        ).runGodfatherNight(currentState)
+        currentState = runStep(currentState) {
+            GodfatherRunner(controllersByPlayerId).runGodfatherNight(it)
+        }
 
-        currentState = PhaseManager.finishCurrentNightPhase(currentState)
+        currentState = runStep(currentState) {
+            PhaseManager.finishCurrentNightPhase(it)
+        }
 
-        currentState = DoctorRunner(
-            controllersByPlayerId = controllersByPlayerId
-        ).runDoctorNight(currentState)
+        currentState = runStep(currentState) {
+            DoctorRunner(controllersByPlayerId).runDoctorNight(it)
+        }
 
-        currentState = PhaseManager.finishCurrentNightPhase(currentState)
+        currentState = runStep(currentState) {
+            PhaseManager.finishCurrentNightPhase(it)
+        }
 
-        currentState = CommissarRunner(
-            controllersByPlayerId = controllersByPlayerId
-        ).runCommissarNight(currentState)
+        currentState = runStep(currentState) {
+            CommissarRunner(controllersByPlayerId).runCommissarNight(it)
+        }
 
-        currentState = PhaseManager.finishCurrentNightPhase(currentState)
+        currentState = runStep(currentState) {
+            PhaseManager.finishCurrentNightPhase(it)
+        }
 
-        currentState = EscortRunner(
-            controllersByPlayerId = controllersByPlayerId
-        ).runEscortNight(currentState)
+        currentState = runStep(currentState) {
+            EscortRunner(controllersByPlayerId).runEscortNight(it)
+        }
 
-        currentState = PhaseManager.finishCurrentNightPhase(currentState)
+        currentState = runStep(currentState) {
+            PhaseManager.finishCurrentNightPhase(it)
+        }
 
-        currentState = ManiacRunner(
-            controllersByPlayerId = controllersByPlayerId
-        ).runManiacNight(currentState)
+        currentState = runStep(currentState) {
+            ManiacRunner(controllersByPlayerId).runManiacNight(it)
+        }
 
-        currentState = NightResultsRunner.resolveNightKills(currentState)
+        currentState = runStep(currentState) {
+            NightResultsRunner.resolveNightKills(it)
+        }
 
         if (currentState.finished) {
             DevLog.info("Night cycle finished the game")
             return currentState
         }
 
-        currentState = PhaseManager.finishCurrentNightPhase(currentState)
+        currentState = runStep(currentState) {
+            PhaseManager.finishCurrentNightPhase(it)
+        }
 
         DevLog.info("Night cycle finished")
+
+        return currentState
+    }
+
+    private fun runStep(
+        state: GameState,
+        step: (GameState) -> GameState
+    ): GameState {
+        val previousState = state
+        val currentState = step(state)
+
+        onStateChanged(previousState, currentState)
 
         return currentState
     }

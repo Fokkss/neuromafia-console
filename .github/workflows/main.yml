@@ -1,4 +1,4 @@
-name: Mafia CI Pipeline
+name: Main CI Pipeline
 
 on:
   push:
@@ -8,14 +8,20 @@ on:
 
 permissions:
   contents: read
+  checks: write
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
-    name: build and main test
+    name: Build and test
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
-      - name: Checkout repository
+      - name: Checkout sources
         uses: actions/checkout@v6
 
       - name: Set up JDK 25
@@ -32,5 +38,18 @@ jobs:
       - name: Make Gradle wrapper executable
         run: chmod +x ./gradlew
 
-      - name: Build
-        run: ./gradlew build --no-daemon
+      - name: Check Gradle wrapper files
+        run: |
+          test -f gradlew
+          test -f gradle/wrapper/gradle-wrapper.jar
+          test -f gradle/wrapper/gradle-wrapper.properties
+
+      - name: Build and run tests
+        run: ./gradlew clean build --no-daemon
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: build/reports/tests/test

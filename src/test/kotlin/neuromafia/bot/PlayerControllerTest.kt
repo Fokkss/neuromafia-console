@@ -11,7 +11,7 @@ import neuromafia.core.model.GameState
 import neuromafia.core.model.Player
 import neuromafia.core.model.Role
 
-class PlayerControllerMockTest {
+class PlayerControllerTest {
     @Test
     fun `mocked controller should return day vote`() {
         val controller = mockk<PlayerController>()

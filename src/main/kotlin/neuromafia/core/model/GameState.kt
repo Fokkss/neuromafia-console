@@ -8,6 +8,7 @@ data class GameState(
     val phase: Phase = Phase.DAY_DISCUSSION,
     val dayNumber: Int = 1,
     val winner: Winner? = null,
+    val nominatedPlayerIds: List<Int> = emptyList(),
     val eventLog: List<GameEvent> = emptyList()
 ) {
     val finished: Boolean

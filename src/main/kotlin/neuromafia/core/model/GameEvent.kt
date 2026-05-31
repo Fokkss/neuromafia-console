@@ -7,6 +7,11 @@ sealed interface GameEvent {
         val reason: KillReason
     ) : GameEvent
 
+    data class PlayerNominated(
+        val speakerId: Int,
+        val nominatedPlayerId: Int
+    ) : GameEvent
+
     data class WinnerDeclared(
         val winner: Winner
     ) : GameEvent

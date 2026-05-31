@@ -46,10 +46,10 @@ interface PlayerController {
         playerId: Int
     ): PlayerAction.ManiacKill
 
-    fun chooseEscortBlock(
+    fun chooseEscortVisit(
         state: GameState,
         playerId: Int
-    ): PlayerAction.EscortBlock
+    ): PlayerAction.EscortVisit
 }
 
 
@@ -62,7 +62,7 @@ class ScriptedPlayerController(
     private val godfatherCommissarChecks: MutableList<PlayerAction.GodfatherCommissarCheck> = mutableListOf(),
     private val commissarChecks: MutableList<PlayerAction.CommissarCheck> = mutableListOf(),
     private val doctorHeals: MutableList<PlayerAction.DoctorHeal> = mutableListOf(),
-    private val escortBlocks: MutableList<PlayerAction.EscortBlock> = mutableListOf(),
+    private val escortVisits: MutableList<PlayerAction.EscortVisit> = mutableListOf(),
     private val maniacKills: MutableList<PlayerAction.ManiacKill> = mutableListOf()
 ) : PlayerController {
     override fun chooseDaySpeech(
@@ -116,11 +116,11 @@ class ScriptedPlayerController(
         return doctorHeals.removeFirst()
     }
 
-    override fun chooseEscortBlock(
+    override fun chooseEscortVisit(
         state: GameState,
         playerId: Int
-    ): PlayerAction.EscortBlock {
-        return escortBlocks.removeFirst()
+    ): PlayerAction.EscortVisit {
+        return escortVisits.removeFirst()
     }
 
     override fun chooseManiacKill(

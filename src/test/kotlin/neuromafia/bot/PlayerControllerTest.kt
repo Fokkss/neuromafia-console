@@ -44,16 +44,16 @@ class PlayerControllerTest {
         val state = testState()
 
         every {
-            controller.chooseEscortBlock(
+            controller.chooseEscortVisit(
                 state = state,
                 playerId = 2
             )
-        } returns PlayerAction.EscortBlock(
+        } returns PlayerAction.EscortVisit(
             escortId = 2,
             targetId = 4
         )
 
-        val action = controller.chooseEscortBlock(
+        val action = controller.chooseEscortVisit(
             state = state,
             playerId = 2
         )

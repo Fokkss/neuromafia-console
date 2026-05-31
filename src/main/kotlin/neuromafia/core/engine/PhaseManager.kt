@@ -77,17 +77,36 @@ object PhaseManager {
         val oldPhase = state.phase
         val newDayNumber = state.dayNumber + 1
 
+        val mutedPlayerIds = state.escortVisitedPlayerId
+            ?.let { setOf(it) }
+            ?: emptySet()
+
+        val muteEvents = mutedPlayerIds.map { playerId ->
+            GameEvent.PlayerMuted(
+                playerId = playerId,
+                dayNumber = newDayNumber
+            )
+        }
+
         DevLog.info("Phase changed from $oldPhase to ${Phase.DAY_DISCUSSION}, day $newDayNumber")
 
         return state.copy(
             phase = Phase.DAY_DISCUSSION,
             dayNumber = newDayNumber,
             nominatedPlayerIds = emptyList(),
-            eventLog = state.eventLog + GameEvent.PhaseChanged(
-                from = oldPhase,
-                to = Phase.DAY_DISCUSSION,
-                dayNumber = newDayNumber
-            )
+            mutedPlayerIds = mutedPlayerIds,
+            escortVisitedPlayerId = null,
+            protectedPlayerId = null,
+            pendingMafiaKillTargetId = null,
+            pendingMafiaKillCandidateIds = emptyList(),
+            pendingManiacKillTargetId = null,
+            eventLog = state.eventLog +
+                    GameEvent.PhaseChanged(
+                        from = oldPhase,
+                        to = Phase.DAY_DISCUSSION,
+                        dayNumber = newDayNumber
+                    ) +
+                    muteEvents
         )
     }
 

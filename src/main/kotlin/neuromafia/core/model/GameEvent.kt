@@ -32,6 +32,32 @@ sealed interface GameEvent {
         val targetId: Int
     ) : GameEvent
 
+    data class DoctorProtected(
+        val doctorId: Int,
+        val targetId: Int
+    ) : GameEvent
+
+    data class CommissarChecked(
+        val commissarId: Int,
+        val targetId: Int,
+        val isMafia: Boolean
+    ) : GameEvent
+
+    data class EscortVisited(
+        val escortId: Int,
+        val targetId: Int
+    ) : GameEvent
+
+    data class PlayerMuted(
+        val playerId: Int,
+        val dayNumber: Int
+    ) : GameEvent
+
+    data class ManiacKillTargetSelected(
+        val maniacId: Int,
+        val targetId: Int
+    ) : GameEvent
+
     data class PlayerSpoke(
         val playerId: Int,
         val message: String

@@ -20,6 +20,7 @@ class DayDiscussionRunner(
         var currentState = state
 
         val speakers = currentState.alivePlayers()
+            .filter { it.id !in currentState.mutedPlayerIds }
             .sortedBy { it.id }
 
         DevLog.info("Running day discussion for ${speakers.size} alive players")

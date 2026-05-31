@@ -36,6 +36,7 @@ class DayVotingRunner(
         val votesByTargetId = mutableMapOf<Int, Int>()
 
         val voters = currentState.alivePlayers()
+            .filter { it.id !in currentState.mutedPlayerIds }
             .sortedBy { it.id }
 
         DevLog.info("Running day voting with candidates ${state.nominatedPlayerIds}")

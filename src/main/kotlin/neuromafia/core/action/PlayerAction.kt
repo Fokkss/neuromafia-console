@@ -42,7 +42,7 @@ sealed interface PlayerAction {
         val targetId: Int
     ) : PlayerAction
 
-    data class EscortBlock(
+    data class EscortVisit(
         val escortId: Int,
         val targetId: Int
     ) : PlayerAction

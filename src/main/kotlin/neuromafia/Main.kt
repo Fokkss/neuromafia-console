@@ -8,6 +8,7 @@ import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.types.choice
 import com.github.ajalt.clikt.parameters.types.int
+
 import neuromafia.core.engine.GameFactory
 import neuromafia.core.engine.WinConditionChecker
 import neuromafia.core.model.GameConfig
@@ -15,6 +16,8 @@ import neuromafia.core.model.GameMode
 import neuromafia.dev.DevLog
 import neuromafia.msg.Language
 import neuromafia.msg.Messages
+import neuromafia.core.engine.GameEngine
+import neuromafia.core.model.KillReason
 
 class NeuromafiaCommand : CliktCommand(
     name = "neuromafia"

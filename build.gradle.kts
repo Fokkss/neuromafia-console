@@ -35,9 +35,9 @@ dependencies {
 
     testImplementation(libs.junit.jupiter)
     testImplementation(libs.mockk)
-    testImplementation(kotlin("test"))
 
-    testRuntimeOnly(libs.junit.platform.launcher)
+    testImplementation(kotlin("test-junit5"))
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher:6.1.0")
 }
 
 tasks.test {

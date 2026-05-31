@@ -2,6 +2,9 @@ package neuromafia.core.engine
 
 import neuromafia.core.model.GameState
 import neuromafia.core.model.Winner
+import neuromafia.core.model.Phase
+import neuromafia.core.model.GameEvent
+
 
 object WinConditionChecker {
     fun checkWinner(state: GameState): Winner? {
@@ -25,7 +28,11 @@ object WinConditionChecker {
         return if (winner == null) {
             state
         } else {
-            state.copy(winner = winner)
+            state.copy(
+                phase = Phase.FINISHED,
+                winner = winner,
+                eventLog = state.eventLog + GameEvent.WinnerDeclared(winner)
+            )
         }
     }
 }

@@ -4,18 +4,29 @@ on:
   push:
     branches:
       - main
+      - neuromafia-beta
   pull_request:
+    branches:
+      - main
+      - neuromafia-beta
+  workflow_dispatch:
 
 permissions:
   contents: read
+  checks: write
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
-    name: build and main test
+    name: Build and test
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
-      - name: Checkout repository
+      - name: Checkout sources
         uses: actions/checkout@v6
 
       - name: Set up JDK 25
@@ -32,5 +43,48 @@ jobs:
       - name: Make Gradle wrapper executable
         run: chmod +x ./gradlew
 
-      - name: Build
-        run: ./gradlew build --no-daemon
+      - name: Check Gradle wrapper files
+        run: |
+          test -f gradlew
+          test -f gradle/wrapper/gradle-wrapper.jar
+          test -f gradle/wrapper/gradle-wrapper.properties
+
+      - name: Compile main sources
+        run: ./gradlew compileKotlin --no-daemon
+
+      - name: Compile test sources
+        run: ./gradlew compileTestKotlin --no-daemon
+
+      - name: Run core engine tests
+        run: ./gradlew test --tests "neuromafia.core.engine.*" --no-daemon
+
+      - name: Run bot tests
+        run: ./gradlew test --tests "neuromafia.bot.*" --no-daemon
+
+      - name: Run app tests
+        run: ./gradlew test --tests "neuromafia.app.*" --no-daemon
+
+      - name: Run LLM tests
+        run: ./gradlew test --tests "neuromafia.llm.*" --tests "neuromafia.bot.LlmPlayerControllerTest" --no-daemon
+
+      - name: Run presentation tests
+        run: ./gradlew test --tests "neuromafia.present.*" --no-daemon
+
+      - name: Run all tests
+        run: ./gradlew test --no-daemon
+
+      - name: Build distribution
+        run: ./gradlew build -x test --no-daemon
+
+      - name: Build Docker image
+        run: docker build -t neuromafia:ci .
+
+      - name: Smoke test Docker image
+        run: docker run --rm neuromafia:ci --help
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: build/reports/tests/test

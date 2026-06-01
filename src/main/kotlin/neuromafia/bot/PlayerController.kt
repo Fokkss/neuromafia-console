@@ -3,6 +3,7 @@ package neuromafia.bot
 import neuromafia.core.action.PlayerAction
 import neuromafia.core.model.GameState
 
+// interface for llm/random players controllers
 interface PlayerController {
     fun chooseDaySpeech(
         state: GameState,

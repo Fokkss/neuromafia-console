@@ -7,6 +7,10 @@ import neuromafia.core.model.Phase
 import neuromafia.core.model.Winner
 import neuromafia.msg.Language
 
+import neuromafia.core.model.ConsoleColors
+import neuromafia.core.model.Player
+import neuromafia.core.model.Role
+
 class PublicEventFormatter(
     private val language: Language
 ) {
@@ -56,7 +60,8 @@ class PublicEventFormatter(
                 Language.RU -> "Игра закончена. Победитель: ${formatWinner(event.winner)}."
             }
 
-            // Hidden night/private events.
+            // hidden night/private events.
+            // (could be possibly seen if I add a special flag for it :) )
             is GameEvent.MafiaKillVoteRecorded -> null
             is GameEvent.MafiaKillTargetSelected -> null
             is GameEvent.MafiaKillTie -> null
@@ -72,19 +77,19 @@ class PublicEventFormatter(
     fun formatSummary(state: GameState): List<String> {
         return when (language) {
             Language.EN -> listOf(
-                "Game finished: ${state.finished}",
-                "Current day: ${state.dayNumber}",
-                "Current phase: ${formatPhase(state.phase)}",
-                "Winner: ${formatWinner(state.winner)}",
-                "Alive players: ${state.alivePlayers().map { it.id }}"
+                "${ConsoleColors.MAGENTA}Game finished: ${state.finished} ${ConsoleColors.RESET}",
+                "${ConsoleColors.MAGENTA}Current day: ${state.dayNumber} ${ConsoleColors.RESET}",
+                "${ConsoleColors.MAGENTA}Current phase: ${formatPhase(state.phase)} ${ConsoleColors.RESET}",
+                "${ConsoleColors.GREEN}Winner: ${formatWinner(state.winner)} ${ConsoleColors.RESET}",
+                "${ConsoleColors.GREEN}Alive players: ${state.alivePlayers().map { it.id }} ${ConsoleColors.RESET}"
             )
 
             Language.RU -> listOf(
-                "Игра закончена: ${state.finished}",
-                "Текущий день: ${state.dayNumber}",
-                "Текущая фаза: ${formatPhase(state.phase)}",
-                "Победитель: ${formatWinner(state.winner)}",
-                "Живые игроки: ${state.alivePlayers().map { it.id }}"
+                "${ConsoleColors.MAGENTA}Игра закончена: ${state.finished} ${ConsoleColors.RESET}",
+                "${ConsoleColors.MAGENTA}Текущий день: ${state.dayNumber} ${ConsoleColors.RESET}",
+                "${ConsoleColors.MAGENTA}Текущая фаза: ${formatPhase(state.phase)} ${ConsoleColors.RESET}",
+                "${ConsoleColors.GREEN}Победитель: ${formatWinner(state.winner)} ${ConsoleColors.RESET}",
+                "${ConsoleColors.GREEN}Живые игроки: ${state.alivePlayers().map { it.id }} ${ConsoleColors.RESET}"
             )
         }
     }
@@ -150,6 +155,94 @@ class PublicEventFormatter(
                 Winner.CIVILIANS -> "мирные жители"
                 Winner.MAFIA -> "мафия"
                 null -> "нет"
+            }
+        }
+    }
+
+    fun formatRoleReveal(state: GameState): List<String> {
+        val lines = mutableListOf<String>()
+
+        when (language) {
+            Language.EN -> {
+                lines.add("")
+                lines.add("Final role reveal:")
+
+                val mafiaPlayers = state.players
+                    .filter { it.role == Role.MAFIA || it.role == Role.GODFATHER }
+                    .sortedBy { it.id }
+
+                if (mafiaPlayers.isEmpty()) {
+                    lines.add("Mafia team: none")
+                } else {
+                    lines.add("Mafia team:")
+                    mafiaPlayers.forEach { player ->
+                        lines.add("  Player ${player.id}: ${formatRole(player.role)}, ${formatPlayerStatus(player)}")
+                    }
+                }
+
+                lines.add("")
+                lines.add("All players:")
+                state.players.sortedBy { it.id }.forEach { player ->
+                    lines.add("  Player ${player.id}: ${formatRole(player.role)}, ${formatPlayerStatus(player)}")
+                }
+            }
+
+            Language.RU -> {
+                lines.add("")
+                lines.add("Итоговое раскрытие ролей:")
+
+                val mafiaPlayers = state.players
+                    .filter { it.role == Role.MAFIA || it.role == Role.GODFATHER }
+                    .sortedBy { it.id }
+
+                if (mafiaPlayers.isEmpty()) {
+                    lines.add("Команда мафии: нет")
+                } else {
+                    lines.add("Команда мафии:")
+                    mafiaPlayers.forEach { player ->
+                        lines.add("  Игрок ${player.id}: ${formatRole(player.role)}, ${formatPlayerStatus(player)}")
+                    }
+                }
+
+                lines.add("")
+                lines.add("Все игроки:")
+                state.players.sortedBy { it.id }.forEach { player ->
+                    lines.add("  Игрок ${player.id}: ${formatRole(player.role)}, ${formatPlayerStatus(player)}")
+                }
+            }
+        }
+
+        return lines
+    }
+
+    private fun formatRole(role: Role): String {
+        return when (language) {
+            Language.EN -> role.name
+
+            Language.RU -> when (role) {
+                Role.CIVILIAN -> "мирный житель"
+                Role.MAFIA -> "мафия"
+                Role.GODFATHER -> "дон мафии"
+                Role.COMMISSAR -> "комиссар"
+                Role.DOCTOR -> "доктор"
+                Role.MANIAC -> "маньяк"
+                Role.ESCORT -> "проститутка"
+            }
+        }
+    }
+
+    private fun formatPlayerStatus(player: Player): String {
+        return when (language) {
+            Language.EN -> if (player.alive) {
+                "alive"
+            } else {
+                "killed"
+            }
+
+            Language.RU -> if (player.alive) {
+                "жив"
+            } else {
+                "убит"
             }
         }
     }

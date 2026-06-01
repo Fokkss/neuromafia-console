@@ -14,11 +14,11 @@ class GodfatherRunner(
 ) {
     fun runGodfatherNight(state: GameState): GameState {
         require(!state.finished) {
-            "Cannot run godfather night after game is finished."
+            "cannot run godfather night after game is finished."
         }
 
         require(state.phase == Phase.NIGHT_GODFATHER) {
-            "Godfather night can be run only during NIGHT_GODFATHER phase."
+            "godfather night can be run only during NIGHT_GODFATHER phase."
         }
 
         var currentState = state
@@ -30,12 +30,12 @@ class GodfatherRunner(
         )
 
         if (godfather == null) {
-            DevLog.info("No alive godfather, commissar check skipped")
+            DevLog.info("no alive godfather, commissar check skipped")
             return currentState
         }
 
         val controller = controllersByPlayerId[godfather.id]
-            ?: error("No controller for godfather ${godfather.id}")
+            ?: error("no controller for godfather ${godfather.id}")
 
         val action = controller.chooseGodfatherCommissarCheck(
             state = currentState,
@@ -43,22 +43,22 @@ class GodfatherRunner(
         )
 
         require(action.godfatherId == godfather.id) {
-            "Controller for godfather ${godfather.id} returned check for player ${action.godfatherId}."
+            "controller for godfather ${godfather.id} returned check for player ${action.godfatherId}."
         }
 
         require(action.targetId != godfather.id) {
-            "Godfather cannot check himself."
+            "godfather cannot check himself."
         }
 
         val target = currentState.playerById(action.targetId)
 
         require(target.alive) {
-            "Godfather cannot check killed player ${target.id}."
+            "godfather cannot check killed player ${target.id}."
         }
 
         val isCommissar = target.role == Role.COMMISSAR
 
-        DevLog.info("Godfather ${godfather.id} checked player ${target.id}, isCommissar=$isCommissar")
+        DevLog.info("godfather ${godfather.id} checked player ${target.id}, isCommissar=$isCommissar")
 
         return currentState.copy(
             godfatherCommissarChecks = currentState.godfatherCommissarChecks + (target.id to isCommissar),
@@ -81,7 +81,7 @@ class GodfatherRunner(
         if (godfatherId == null) {
             val selectedTargetId = state.pendingMafiaKillCandidateIds.random(random)
 
-            DevLog.info("No alive godfather, random mafia kill target selected: $selectedTargetId")
+            DevLog.info("no alive godfather, random mafia kill target selected: $selectedTargetId")
 
             return state.copy(
                 pendingMafiaKillTargetId = selectedTargetId,
@@ -93,7 +93,7 @@ class GodfatherRunner(
         }
 
         val controller = controllersByPlayerId[godfatherId]
-            ?: error("No controller for godfather $godfatherId")
+            ?: error("no controller for godfather $godfatherId")
 
         val action = controller.chooseGodfatherKillDecision(
             state = state,
@@ -102,14 +102,14 @@ class GodfatherRunner(
         )
 
         require(action.godfatherId == godfatherId) {
-            "Controller for godfather $godfatherId returned kill decision for player ${action.godfatherId}."
+            "controller for godfather $godfatherId returned kill decision for player ${action.godfatherId}."
         }
 
         require(action.targetId in state.pendingMafiaKillCandidateIds) {
-            "Godfather selected player ${action.targetId}, but candidates are ${state.pendingMafiaKillCandidateIds}."
+            "godfather selected player ${action.targetId}, but candidates are ${state.pendingMafiaKillCandidateIds}."
         }
 
-        DevLog.info("Godfather $godfatherId selected final mafia kill target ${action.targetId}")
+        DevLog.info("godfather $godfatherId selected final mafia kill target ${action.targetId}")
 
         return state.copy(
             pendingMafiaKillTargetId = action.targetId,

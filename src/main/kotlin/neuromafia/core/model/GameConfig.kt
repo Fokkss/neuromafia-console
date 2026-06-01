@@ -14,15 +14,15 @@ data class GameConfig(
 ) {
     init {
         require(playerCount >= 4) {
-            "Player count must be at least 4."
+            "player count must be at least 4."
         }
 
         require(mafiaCount >= 1) {
-            "Mafia count must be at least 1."
+            "mafia count must be at least 1."
         }
 
         require(mafiaCount < playerCount) {
-            "Mafia count must be less than player count."
+            "mafia count must be less than player count."
         }
 
         val specialCivilianRoleCount =
@@ -36,16 +36,16 @@ data class GameConfig(
         val requiredPlayerCount = mafiaCount + specialCivilianRoleCount + neutralRoleCount
 
         require(requiredPlayerCount <= playerCount) {
-            "Too many enabled roles for $playerCount players."
+            "too many enabled roles for $playerCount players."
         }
 
         if (mode == GameMode.HUMAN) {
             require(humanPlayerId != null) {
-                "Human player id must be specified in HUMAN mode."
+                "human player id must be specified in HUMAN mode."
             }
 
             require(humanPlayerId in 1..playerCount) {
-                "Human player id must be between 1 and $playerCount."
+                "human player id must be between 1 and $playerCount."
             }
         }
     }

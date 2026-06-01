@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.gradle.api.tasks.JavaExec
 
 plugins {
     alias(libs.plugins.kotlin.jvm)
@@ -6,8 +7,8 @@ plugins {
     application
 }
 
-group = ""
-version = "0.1.0"
+group = "neuromafia"
+version = "1.0.0"
 
 kotlin {
     jvmToolchain(25)
@@ -20,6 +21,7 @@ kotlin {
 
 application {
     mainClass.set("neuromafia.MainKt")
+    applicationName = "neuromafia"
 }
 
 dependencies {
@@ -42,6 +44,21 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher:6.1.0")
 }
 
+distributions {
+    main {
+        contents {
+            from("README.md")
+            from("misc/README_INSTRUCTIONS.md") {
+                into("misc")
+            }
+        }
+    }
+}
+
 tasks.test {
     useJUnitPlatform()
+}
+
+tasks.named<JavaExec>("run") {
+    standardInput = System.`in`
 }

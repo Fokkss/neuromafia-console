@@ -11,14 +11,14 @@ class GameRoundRunner(
 ) {
     fun runRound(state: GameState): GameState {
         require(!state.finished) {
-            "Cannot run round after game is finished."
+            "cannot run round after game is finished."
         }
 
         require(state.phase == Phase.DAY_DISCUSSION) {
-            "Game round must start from DAY_DISCUSSION."
+            "game round must start from DAY_DISCUSSION."
         }
 
-        DevLog.info("Game round started, day ${state.dayNumber}")
+        DevLog.info("game round started, day ${state.dayNumber}")
 
         var currentState = DayCycleRunner(
             controllersByPlayerId = controllersByPlayerId,
@@ -34,7 +34,7 @@ class GameRoundRunner(
             onStateChanged = onStateChanged
         ).runNight(currentState)
 
-        DevLog.info("Game round finished")
+        DevLog.info("game round finished")
 
         return currentState
     }

@@ -12,22 +12,22 @@ class CommissarRunner(
 ) {
     fun runCommissarNight(state: GameState): GameState {
         require(!state.finished) {
-            "Cannot run commissar night after game is finished."
+            "cannot run commissar night after game is finished."
         }
 
         require(state.phase == Phase.NIGHT_COMMISSAR) {
-            "Commissar night can be run only during NIGHT_COMMISSAR phase."
+            "commissar night can be run only during NIGHT_COMMISSAR phase."
         }
 
         val commissar = state.aliveCommissar()
 
         if (commissar == null) {
-            DevLog.info("No alive commissar, commissar night skipped")
+            DevLog.info("no alive commissar, commissar night skipped")
             return state
         }
 
         val controller = controllersByPlayerId[commissar.id]
-            ?: error("No controller for commissar ${commissar.id}")
+            ?: error("no controller for commissar ${commissar.id}")
 
         val action = controller.chooseCommissarCheck(
             state = state,
@@ -35,22 +35,22 @@ class CommissarRunner(
         )
 
         require(action.commissarId == commissar.id) {
-            "Controller for commissar ${commissar.id} returned check for player ${action.commissarId}."
+            "controller for commissar ${commissar.id} returned check for player ${action.commissarId}."
         }
 
         require(action.targetId != commissar.id) {
-            "Commissar cannot check himself."
+            "commissar cannot check himself."
         }
 
         val target = state.playerById(action.targetId)
 
         require(target.alive) {
-            "Commissar cannot check killed player ${target.id}."
+            "commissar cannot check killed player ${target.id}."
         }
 
         val isMafia = target.role.team == Team.MAFIA
 
-        DevLog.info("Commissar ${commissar.id} checked player ${target.id}, isMafia=$isMafia")
+        DevLog.info("commissar ${commissar.id} checked player ${target.id}, isMafia=$isMafia")
 
         return state.copy(
             commissarChecks = state.commissarChecks + (target.id to isMafia),

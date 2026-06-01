@@ -11,22 +11,22 @@ class ManiacRunner(
 ) {
     fun runManiacNight(state: GameState): GameState {
         require(!state.finished) {
-            "Cannot run maniac night after game is finished."
+            "cannot run maniac night after game is finished."
         }
 
         require(state.phase == Phase.NIGHT_MANIAC) {
-            "Maniac night can be run only during NIGHT_MANIAC phase."
+            "maniac night can be run only during NIGHT_MANIAC phase."
         }
 
         val maniac = state.aliveManiac()
 
         if (maniac == null) {
-            DevLog.info("No alive maniac, maniac night skipped")
+            DevLog.info("no alive maniac, maniac night skipped")
             return state.copy(pendingManiacKillTargetId = null)
         }
 
         val controller = controllersByPlayerId[maniac.id]
-            ?: error("No controller for maniac ${maniac.id}")
+            ?: error("no controller for maniac ${maniac.id}")
 
         val action = controller.chooseManiacKill(
             state = state,
@@ -34,20 +34,20 @@ class ManiacRunner(
         )
 
         require(action.maniacId == maniac.id) {
-            "Controller for maniac ${maniac.id} returned kill for player ${action.maniacId}."
+            "controller for maniac ${maniac.id} returned kill for player ${action.maniacId}."
         }
 
         require(action.targetId != maniac.id) {
-            "Maniac cannot kill himself."
+            "maniac cannot kill himself."
         }
 
         val target = state.playerById(action.targetId)
 
         require(target.alive) {
-            "Maniac cannot kill killed player ${target.id}."
+            "maniac cannot kill killed player ${target.id}."
         }
 
-        DevLog.info("Maniac ${maniac.id} selected kill target ${target.id}")
+        DevLog.info("maniac ${maniac.id} selected kill target ${target.id}")
 
         return state.copy(
             pendingManiacKillTargetId = target.id,

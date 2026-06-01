@@ -12,18 +12,18 @@ class NightMafiaRunner(
 ) {
     fun runMafiaKillVoting(state: GameState): GameState {
         require(!state.finished) {
-            "Cannot run mafia night after game is finished."
+            "cannot run mafia night after game is finished."
         }
 
         require(state.phase == Phase.NIGHT_MAFIA) {
-            "Mafia kill voting can be run only during NIGHT_MAFIA phase."
+            "mafia kill voting can be run only during NIGHT_MAFIA phase."
         }
 
         val mafiaPlayers = state.aliveMafiaPlayers()
             .sortedBy { it.id }
 
         if (mafiaPlayers.isEmpty()) {
-            DevLog.info("No alive mafia players, mafia night skipped")
+            DevLog.info("no alive mafia players, mafia night skipped")
             return state
         }
 
@@ -36,7 +36,7 @@ class NightMafiaRunner(
 
         for (mafiaPlayer in mafiaPlayers) {
             val controller = controllersByPlayerId[mafiaPlayer.id]
-                ?: error("No controller for mafia player ${mafiaPlayer.id}")
+                ?: error("no controller for mafia player ${mafiaPlayer.id}")
 
             val action = controller.chooseMafiaKillVote(
                 state = currentState,
@@ -44,17 +44,17 @@ class NightMafiaRunner(
             )
 
             require(action.mafiaId == mafiaPlayer.id) {
-                "Controller for player ${mafiaPlayer.id} returned mafia vote for player ${action.mafiaId}."
+                "controller for player ${mafiaPlayer.id} returned mafia vote for player ${action.mafiaId}."
             }
 
             val target = currentState.playerById(action.targetId)
 
             require(target.alive) {
-                "Mafia player ${mafiaPlayer.id} voted for killed player ${target.id}."
+                "mafia player ${mafiaPlayer.id} voted for killed player ${target.id}."
             }
 
             require(target.role.team != Team.MAFIA) {
-                "Mafia player ${mafiaPlayer.id} cannot vote to kill mafia teammate ${target.id}."
+                "mafia player ${mafiaPlayer.id} cannot vote to kill mafia teammate ${target.id}."
             }
 
             votesByTargetId[action.targetId] = votesByTargetId.getOrDefault(action.targetId, 0) + 1
@@ -76,7 +76,7 @@ class NightMafiaRunner(
         if (leaders.size == 1) {
             val targetId = leaders.single()
 
-            DevLog.info("Mafia selected kill target $targetId")
+            DevLog.info("mafia selected kill target $targetId")
 
             return currentState.copy(
                 pendingMafiaKillTargetId = targetId,
@@ -87,7 +87,7 @@ class NightMafiaRunner(
             )
         }
 
-        DevLog.info("Mafia kill voting tie between $leaders")
+        DevLog.info("mafia kill voting tie between $leaders")
 
         return currentState.copy(
             pendingMafiaKillTargetId = null,

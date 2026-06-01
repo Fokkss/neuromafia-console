@@ -13,31 +13,49 @@ import neuromafia.bot.LlmPlayerController
 import neuromafia.llm.LlmLanguage
 import neuromafia.llm.LlmProvider
 
+import neuromafia.bot.HumanPlayerController
+import neuromafia.core.model.GameMode
+import neuromafia.msg.Language
+
 class MafiaApplication {
     fun runRandomGame(
         config: GameConfig,
         maxRounds: Int,
         random: Random = Random.Default,
-        onStateChanged: (previousState: GameState, currentState: GameState) -> Unit = { _, _ -> }
-
+        onStateChanged: (previousState: GameState, currentState: GameState) -> Unit = { _, _ -> },
+        language: Language = Language.EN
     ): GameState {
         require(maxRounds > 0) {
-            "Max rounds must be positive."
+            "max rounds must be positive."
         }
 
-        DevLog.info("Creating initial game state")
+        DevLog.info("creating initial game state")
 
         val initialState = GameFactory.create(
             config = config,
             random = random
         )
 
-        val controllersByPlayerId = createRandomControllers(
-            state = initialState,
-            random = random
-        )
+        // one -- actual human
+        // others -- random
+        val controllersByPlayerId = initialState.players.associate { player ->
+            val controller = if (
+                config.mode == GameMode.HUMAN &&
+                config.humanPlayerId == player.id
+            ) {
+                HumanPlayerController(
+                    language = language
+                )
+            } else {
+                RandomPlayerController(
+                    random = Random(random.nextInt())
+                )
+            }
 
-        DevLog.info("Starting game loop")
+            player.id to controller
+        }
+
+        DevLog.info("starting game loop")
 
         return GameLoopRunner(
             controllersByPlayerId = controllersByPlayerId,
@@ -53,19 +71,31 @@ class MafiaApplication {
         maxRounds: Int,
         provider: LlmProvider,
         language: LlmLanguage,
-        onStateChanged: (previousState: GameState, currentState: GameState) -> Unit = { _, _ -> }
+        onStateChanged: (previousState: GameState, currentState: GameState) -> Unit = { _, _ -> },
+        uiLanguage: Language = Language.EN,
     ): GameState {
         require(maxRounds > 0) {
-            "Max rounds must be positive."
+            "max rounds must be positive."
         }
 
         val initialState = GameFactory.create(config)
 
         val controllersByPlayerId = initialState.players.associate { player ->
-            player.id to LlmPlayerController(
-                provider = provider,
-                language = language
-            ) as PlayerController
+            val controller = if (
+                config.mode == GameMode.HUMAN &&
+                config.humanPlayerId == player.id
+            ) {
+                HumanPlayerController(
+                    language = uiLanguage
+                )
+            } else {
+                LlmPlayerController(
+                    provider = provider,
+                    language = language
+                )
+            }
+
+            player.id to controller
         }
 
         return GameLoopRunner(

@@ -13,20 +13,20 @@ object GameEngine {
         message: String
     ): GameState {
         require(!state.finished) {
-            "Cannot record speech after game is finished."
+            "cannot record speech after game is finished."
         }
 
         require(state.phase == Phase.DAY_DISCUSSION) {
-            "Player can speak only during day discussion."
+            "player can speak only during day discussion."
         }
 
         val player = state.playerById(playerId)
 
         require(player.alive) {
-            "Killed player $playerId cannot speak."
+            "killed player $playerId cannot speak."
         }
 
-        DevLog.info("Recorded day speech from player $playerId")
+        DevLog.info("recorded day speech from player $playerId")
 
         return state.copy(
             eventLog = state.eventLog + GameEvent.PlayerSpoke(
@@ -42,16 +42,16 @@ object GameEngine {
         reason: KillReason
     ): GameState {
         require(!state.finished) {
-            "Cannot kill player after game is finished."
+            "cannot kill player after game is finished."
         }
 
         val target = state.playerById(playerId)
 
         require(target.alive) {
-            "Player $playerId is already killed."
+            "player $playerId is already killed."
         }
 
-        DevLog.info("Killing player $playerId by reason $reason")
+        DevLog.info("killing player $playerId by reason $reason")
 
         val updatedPlayers = state.players.map { player ->
             if (player.id == playerId) {
@@ -78,33 +78,33 @@ object GameEngine {
         nominatedPlayerId: Int
     ): GameState {
         require(!state.finished) {
-            "Cannot nominate player after game is finished."
+            "cannot nominate player after game is finished."
         }
 
         require(state.phase == Phase.DAY_DISCUSSION) {
-            "Players can be nominated only during day discussion."
+            "players can be nominated only during day discussion."
         }
 
         val speaker = state.playerById(speakerId)
         val nominatedPlayer = state.playerById(nominatedPlayerId)
 
         require(speaker.alive) {
-            "Speaker $speakerId is killed."
+            "speaker $speakerId is killed."
         }
 
         require(nominatedPlayer.alive) {
-            "Nominated player $nominatedPlayerId is killed."
+            "nominated player $nominatedPlayerId is killed."
         }
 
         require(speakerId != nominatedPlayerId) {
-            "Player cannot nominate himself."
+            "player cannot nominate himself."
         }
 
         require(nominatedPlayerId !in state.nominatedPlayerIds) {
-            "Player $nominatedPlayerId is already nominated."
+            "player $nominatedPlayerId is already nominated."
         }
 
-        DevLog.info("Player $speakerId nominated player $nominatedPlayerId")
+        DevLog.info("player $speakerId nominated player $nominatedPlayerId")
 
         return state.copy(
             nominatedPlayerIds = state.nominatedPlayerIds + nominatedPlayerId,

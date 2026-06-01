@@ -6,6 +6,7 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
+// using ktor
 object HttpClientFactory {
     fun create(): HttpClient {
         return HttpClient(CIO) {

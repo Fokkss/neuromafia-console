@@ -19,8 +19,7 @@ data class GameState(
     val pendingManiacKillTargetId: Int? = null,
     val commissarChecks: Map<Int, Boolean> = emptyMap(),
 ) {
-    val finished: Boolean
-        get() = winner != null || phase == Phase.FINISHED
+    val finished: Boolean get() = winner != null || phase == Phase.FINISHED
 
     fun alivePlayers(): List<Player> {
         return players.filter { it.alive }
@@ -56,6 +55,6 @@ data class GameState(
 
     fun playerById(id: Int): Player {
         return players.firstOrNull { it.id == id }
-            ?: error("Player with id $id not found.")
+            ?: error("player with id $id not found.")
     }
 }

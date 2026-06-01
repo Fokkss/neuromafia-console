@@ -3,6 +3,8 @@ package neuromafia.msg
 import neuromafia.core.model.GameConfig
 import neuromafia.core.model.Player
 
+import neuromafia.core.model.ConsoleColors
+
 class Messages(
     private val language: Language
 ) {
@@ -14,7 +16,7 @@ class Messages(
     }
 
     fun gameConfig(config: GameConfig): String {
-        return when (language) {
+        val text = when (language) {
             Language.EN -> """
                 Game config:
                   mode: ${config.mode}
@@ -43,12 +45,14 @@ class Messages(
                   id человека: ${config.humanPlayerId ?: "нет"}
             """.trimIndent()
         }
+
+        return "${ConsoleColors.CYAN}$text${ConsoleColors.RESET}"
     }
 
     fun createdGame(): String {
         return when (language) {
-            Language.EN -> "Created game:"
-            Language.RU -> "Созданная игра:"
+            Language.EN -> "created game:"
+            Language.RU -> "созданная игра:"
         }
     }
 
@@ -61,8 +65,8 @@ class Messages(
 
     fun winnerAtStart(winner: Any?): String {
         return when (language) {
-            Language.EN -> "Winner at start: ${winner ?: "none"}"
-            Language.RU -> "Победитель в начале игры: ${winner ?: "нет"}"
+            Language.EN -> "${ConsoleColors.GREEN}Winner at start: ${winner ?: "none"} ${ConsoleColors.RESET}"
+            Language.RU -> "${ConsoleColors.GREEN}Победитель в начале игры: ${winner ?: "нет"} ${ConsoleColors.RESET}"
         }
     }
 

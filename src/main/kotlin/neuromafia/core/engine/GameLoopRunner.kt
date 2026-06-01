@@ -13,7 +13,7 @@ class GameLoopRunner(
         maxRounds: Int = 50
     ): GameState {
         require(maxRounds > 0) {
-            "Max rounds must be positive."
+            "max rounds must be positive."
         }
 
         var currentState = initialState
@@ -22,7 +22,7 @@ class GameLoopRunner(
         while (!currentState.finished && round < maxRounds) {
             round += 1
 
-            DevLog.info("Running round $round")
+            DevLog.info("running round $round")
 
             currentState = GameRoundRunner(
                 controllersByPlayerId = controllersByPlayerId,

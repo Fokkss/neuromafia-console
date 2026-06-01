@@ -1,5 +1,6 @@
 package neuromafia.core.action
 
+// available actions
 sealed interface PlayerAction {
     data class DaySpeech(
         val playerId: Int,

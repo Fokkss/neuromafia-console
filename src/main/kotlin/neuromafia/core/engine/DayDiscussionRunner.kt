@@ -11,11 +11,11 @@ class DayDiscussionRunner(
 ) {
     fun runDiscussion(state: GameState): GameState {
         require(!state.finished) {
-            "Cannot run day discussion after game is finished."
+            "cannot run day discussion after game is finished."
         }
 
         require(state.phase == Phase.DAY_DISCUSSION) {
-            "Day discussion can be run only during DAY_DISCUSSION phase."
+            "day discussion can be run only during DAY_DISCUSSION phase."
         }
 
         var currentState = state
@@ -24,11 +24,11 @@ class DayDiscussionRunner(
             .filter { it.id !in currentState.mutedPlayerIds }
             .sortedBy { it.id }
 
-        DevLog.info("Running day discussion for ${speakers.size} alive players")
+        DevLog.info("running day discussion for ${speakers.size} alive players")
 
         for (speaker in speakers) {
             val controller = controllersByPlayerId[speaker.id]
-                ?: error("No controller for player ${speaker.id}")
+                ?: error("no controller for player ${speaker.id}")
 
             val action = controller.chooseDaySpeech(
                 state = currentState,
@@ -36,7 +36,7 @@ class DayDiscussionRunner(
             )
 
             require(action.playerId == speaker.id) {
-                "Controller for player ${speaker.id} returned action for player ${action.playerId}."
+                "controller for player ${speaker.id} returned action for player ${action.playerId}."
             }
 
             var previousState = currentState
@@ -60,8 +60,8 @@ class DayDiscussionRunner(
                     )
                 } catch (exception: IllegalArgumentException) {
                     DevLog.info(
-                        "Invalid nomination from player ${action.playerId}: " +
-                                "${action.nominatedPlayerId}. Reason: ${exception.message}"
+                        "invalid nomination from player ${action.playerId}: " +
+                                "${action.nominatedPlayerId}, reason: ${exception.message}"
                     )
 
                     currentState

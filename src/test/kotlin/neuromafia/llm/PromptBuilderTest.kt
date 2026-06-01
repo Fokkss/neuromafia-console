@@ -59,4 +59,26 @@ class PromptBuilderTest {
             eventLog = eventLog
         )
     }
+
+    @Test
+    fun `buildDaySpeechRequest should include current day discussion`() {
+        val state = testState(
+            eventLog = listOf(
+                GameEvent.PlayerSpoke(
+                    playerId = 1,
+                    message = "Добрый день! Скажите МЯУ, если слышите меня!"
+                )
+            )
+        )
+
+        val request = PromptBuilder().buildDaySpeechRequest(
+            state = state,
+            playerId = 2,
+            language = LlmLanguage.RU
+        )
+
+        assertTrue(request.userPrompt.contains("Current day discussion so far"))
+        assertTrue(request.userPrompt.contains("Игрок 1 сказал: Добрый день! Скажите МЯУ"))
+        assertTrue(request.userPrompt.contains("Do not ignore previous public speeches"))
+    }
 }

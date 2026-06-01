@@ -13,15 +13,15 @@ class DayVotingRunner(
 ) {
     fun runVoting(state: GameState): Pair<GameState, DayVoting> {
         require(!state.finished) {
-            "Cannot run day voting after game is finished."
+            "cannot run day voting after game is finished."
         }
 
         require(state.phase == Phase.DAY_VOTING) {
-            "Day voting can be run only during DAY_VOTING phase."
+            "day voting can be run only during DAY_VOTING phase."
         }
 
         if (state.nominatedPlayerIds.isEmpty()) {
-            DevLog.info("Day voting skipped: no nominated players")
+            DevLog.info("day voting skipped: no nominated players")
             return state to DayVoting.NoCandidates
         }
 
@@ -30,7 +30,7 @@ class DayVotingRunner(
         }
 
         require(nominatedPlayers.all { it.alive }) {
-            "All nominated players must be alive."
+            "all nominated players must be alive."
         }
 
         var currentState = state
@@ -40,11 +40,11 @@ class DayVotingRunner(
             .filter { it.id !in currentState.mutedPlayerIds }
             .sortedBy { it.id }
 
-        DevLog.info("Running day voting with candidates ${state.nominatedPlayerIds}")
+        DevLog.info("running day voting with candidates ${state.nominatedPlayerIds}")
 
         for (voter in voters) {
             val controller = controllersByPlayerId[voter.id]
-                ?: error("No controller for player ${voter.id}")
+                ?: error("no controller for player ${voter.id}")
 
             val action = controller.chooseDayVote(
                 state = currentState,
@@ -53,16 +53,16 @@ class DayVotingRunner(
             )
 
             require(action.voterId == voter.id) {
-                "Controller for player ${voter.id} returned vote for player ${action.voterId}."
+                "controller for player ${voter.id} returned vote for player ${action.voterId}."
             }
 
             if (action.targetId != null) {
                 require(action.targetId in currentState.nominatedPlayerIds) {
-                    "Player ${voter.id} voted for non-nominated player ${action.targetId}."
+                    "player ${voter.id} voted for non-nominated player ${action.targetId}."
                 }
 
                 require(currentState.playerById(action.targetId).alive) {
-                    "Player ${voter.id} voted for killed player ${action.targetId}."
+                    "player ${voter.id} voted for killed player ${action.targetId}."
                 }
 
                 votesByTargetId[action.targetId] = votesByTargetId.getOrDefault(action.targetId, 0) + 1
@@ -81,7 +81,7 @@ class DayVotingRunner(
         }
 
         if (votesByTargetId.isEmpty()) {
-            DevLog.info("Day voting finished: nobody voted")
+            DevLog.info("day voting finished: nobody voted")
             return currentState to DayVoting.Tie(
                 candidateIds = currentState.nominatedPlayerIds
             )
@@ -94,7 +94,7 @@ class DayVotingRunner(
             .sorted()
 
         if (leaders.size != 1) {
-            DevLog.info("Day voting tie between $leaders")
+            DevLog.info("day voting tie between $leaders")
 
             val previousState = currentState
 
@@ -113,7 +113,7 @@ class DayVotingRunner(
 
         val killedPlayerId = leaders.single()
 
-        DevLog.info("Day voting killed player $killedPlayerId")
+        DevLog.info("day voting killed player $killedPlayerId")
 
         val previousState = currentState
 

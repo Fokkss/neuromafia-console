@@ -1,5 +1,6 @@
 package neuromafia.llm
 
+// instructions for llm (also set ups a lang for it)
 enum class LlmLanguage {
     EN,
     RU;

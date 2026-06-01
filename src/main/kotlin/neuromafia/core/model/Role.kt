@@ -8,6 +8,6 @@ enum class Role(
     GODFATHER(Team.MAFIA),
     COMMISSAR(Team.CIVILIANS),
     DOCTOR(Team.CIVILIANS),
-    MANIAC(Team.CIVILIANS),
+    MANIAC(Team.CIVILIANS), // my game relates on rules where maniac kills for the sake of civilians
     ESCORT(Team.CIVILIANS)
 }

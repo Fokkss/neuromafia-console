@@ -11,14 +11,14 @@ class NightCycleRunner(
 ) {
     fun runNight(state: GameState): GameState {
         require(!state.finished) {
-            "Cannot run night after game is finished."
+            "cannot run night after game is finished."
         }
 
         require(state.phase == Phase.NIGHT_MAFIA) {
-            "Night cycle must start from NIGHT_MAFIA."
+            "night cycle must start from NIGHT_MAFIA."
         }
 
-        DevLog.info("Night cycle started")
+        DevLog.info("night cycle started")
 
         var currentState = state
 
@@ -71,7 +71,7 @@ class NightCycleRunner(
         }
 
         if (currentState.finished) {
-            DevLog.info("Night cycle finished the game")
+            DevLog.info("night cycle finished the game")
             return currentState
         }
 
@@ -79,7 +79,7 @@ class NightCycleRunner(
             PhaseManager.finishCurrentNightPhase(it)
         }
 
-        DevLog.info("Night cycle finished")
+        DevLog.info("night cycle finished")
 
         return currentState
     }

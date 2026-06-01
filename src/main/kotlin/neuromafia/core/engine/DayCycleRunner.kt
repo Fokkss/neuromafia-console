@@ -11,14 +11,14 @@ class DayCycleRunner(
 ) {
     fun runDay(state: GameState): GameState {
         require(!state.finished) {
-            "Cannot run day after game is finished."
+            "cannot run day after game is finished."
         }
 
         require(state.phase == Phase.DAY_DISCUSSION) {
-            "Day cycle must start from DAY_DISCUSSION."
+            "day cycle must start from DAY_DISCUSSION."
         }
 
-        DevLog.info("Day cycle started, day ${state.dayNumber}")
+        DevLog.info("day cycle started, day ${state.dayNumber}")
 
         var currentState = DayDiscussionRunner(
             controllersByPlayerId = controllersByPlayerId,
@@ -48,7 +48,7 @@ class DayCycleRunner(
         currentState = PhaseManager.startNight(currentState)
         onStateChanged(previousState, currentState)
 
-        DevLog.info("Day cycle finished, night started")
+        DevLog.info("day cycle finished, night started")
 
         return currentState
     }

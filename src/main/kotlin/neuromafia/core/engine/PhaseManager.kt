@@ -8,11 +8,11 @@ import neuromafia.dev.DevLog
 object PhaseManager {
     fun startDayVoting(state: GameState): GameState {
         require(!state.finished) {
-            "Cannot start day voting after game is finished."
+            "cannot start day voting after game is finished."
         }
 
         require(state.phase == Phase.DAY_DISCUSSION) {
-            "Day voting can be started only after day discussion."
+            "day voting can be started only after day discussion."
         }
 
         return transitionTo(
@@ -23,11 +23,11 @@ object PhaseManager {
 
     fun startNight(state: GameState): GameState {
         require(!state.finished) {
-            "Cannot start night after game is finished."
+            "cannot start night after game is finished."
         }
 
         require(state.phase == Phase.DAY_VOTING) {
-            "Night can be started only after day voting."
+            "night can be started only after day voting."
         }
 
         return transitionTo(
@@ -38,7 +38,7 @@ object PhaseManager {
 
     fun finishCurrentNightPhase(state: GameState): GameState {
         require(!state.finished) {
-            "Cannot finish night phase after game is finished."
+            "cannot finish night phase after game is finished."
         }
 
         return when (state.phase) {
@@ -69,7 +69,7 @@ object PhaseManager {
 
             Phase.NIGHT_MANIAC -> startNextDay(state)
 
-            else -> error("Current phase ${state.phase} is not a night phase.")
+            else -> error("current phase ${state.phase} is not a night phase.")
         }
     }
 
@@ -96,7 +96,7 @@ object PhaseManager {
             )
         }
 
-        DevLog.info("Phase changed from $oldPhase to ${Phase.DAY_DISCUSSION}, day $newDayNumber")
+        DevLog.info("phase changed from $oldPhase to ${Phase.DAY_DISCUSSION}, day $newDayNumber")
 
         return state.copy(
             phase = Phase.DAY_DISCUSSION,
@@ -122,7 +122,7 @@ object PhaseManager {
         state: GameState,
         nextPhase: Phase
     ): GameState {
-        DevLog.info("Phase changed from ${state.phase} to $nextPhase, day ${state.dayNumber}")
+        DevLog.info("phase changed from ${state.phase} to $nextPhase, day ${state.dayNumber}")
 
         return state.copy(
             phase = nextPhase,

@@ -8,7 +8,7 @@ import neuromafia.dev.DevLog
 object NightResultsRunner {
     fun resolveNightKills(state: GameState): GameState {
         require(!state.finished) {
-            "Cannot resolve night kills after game is finished."
+            "cannot resolve night kills after game is finished."
         }
 
         var currentState = state
@@ -45,7 +45,7 @@ object NightResultsRunner {
 
         for ((playerId, reason) in finalKills.distinctBy { it.first }) {
             if (currentState.playerById(playerId).alive) {
-                DevLog.info("Night resolution kills player $playerId by $reason")
+                DevLog.info("night resolution kills player $playerId by $reason")
 
                 currentState = GameEngine.killPlayer(
                     state = currentState,

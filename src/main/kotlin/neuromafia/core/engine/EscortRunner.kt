@@ -11,22 +11,22 @@ class EscortRunner(
 ) {
     fun runEscortNight(state: GameState): GameState {
         require(!state.finished) {
-            "Cannot run escort night after game is finished."
+            "cannot run escort night after game is finished."
         }
 
         require(state.phase == Phase.NIGHT_ESCORT) {
-            "Escort night can be run only during NIGHT_ESCORT phase."
+            "escort night can be run only during NIGHT_ESCORT phase."
         }
 
         val escort = state.aliveEscort()
 
         if (escort == null) {
-            DevLog.info("No alive escort, escort night skipped")
+            DevLog.info("no alive escort, escort night skipped")
             return state.copy(escortVisitedPlayerId = null)
         }
 
         val controller = controllersByPlayerId[escort.id]
-            ?: error("No controller for escort ${escort.id}")
+            ?: error("no controller for escort ${escort.id}")
 
         val action = controller.chooseEscortVisit(
             state = state,
@@ -34,20 +34,20 @@ class EscortRunner(
         )
 
         require(action.escortId == escort.id) {
-            "Controller for escort ${escort.id} returned visit for player ${action.escortId}."
+            "controller for escort ${escort.id} returned visit for player ${action.escortId}."
         }
 
         require(action.targetId != escort.id) {
-            "Escort cannot visit herself."
+            "escort cannot visit herself."
         }
 
         val target = state.playerById(action.targetId)
 
         require(target.alive) {
-            "Escort cannot visit killed player ${target.id}."
+            "escort cannot visit killed player ${target.id}."
         }
 
-        DevLog.info("Escort ${escort.id} visited player ${target.id}")
+        DevLog.info("escort ${escort.id} visited player ${target.id}")
 
         return state.copy(
             escortVisitedPlayerId = target.id,

@@ -54,4 +54,12 @@ class PublicEventPrinter(
             println(line)
         }
     }
+
+    fun printRoleReveal(state: GameState) {
+        formatter.formatRoleReveal(state).forEach { line ->
+            println(line)
+        }
+
+        System.out.flush()
+    }
 }

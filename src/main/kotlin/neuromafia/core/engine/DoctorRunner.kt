@@ -11,22 +11,22 @@ class DoctorRunner(
 ) {
     fun runDoctorNight(state: GameState): GameState {
         require(!state.finished) {
-            "Cannot run doctor night after game is finished."
+            "cannot run doctor night after game is finished."
         }
 
         require(state.phase == Phase.NIGHT_DOCTOR) {
-            "Doctor night can be run only during NIGHT_DOCTOR phase."
+            "doctor night can be run only during NIGHT_DOCTOR phase."
         }
 
         val doctor = state.aliveDoctor()
 
         if (doctor == null) {
-            DevLog.info("No alive doctor, doctor night skipped")
+            DevLog.info("no alive doctor, doctor night skipped")
             return state.copy(protectedPlayerId = null)
         }
 
         val controller = controllersByPlayerId[doctor.id]
-            ?: error("No controller for doctor ${doctor.id}")
+            ?: error("no controller for doctor ${doctor.id}")
 
         val action = controller.chooseDoctorHeal(
             state = state,
@@ -34,16 +34,16 @@ class DoctorRunner(
         )
 
         require(action.doctorId == doctor.id) {
-            "Controller for doctor ${doctor.id} returned heal for player ${action.doctorId}."
+            "controller for doctor ${doctor.id} returned heal for player ${action.doctorId}."
         }
 
         val target = state.playerById(action.targetId)
 
         require(target.alive) {
-            "Doctor cannot protect killed player ${target.id}."
+            "doctor cannot protect killed player ${target.id}."
         }
 
-        DevLog.info("Doctor ${doctor.id} protected player ${target.id}")
+        DevLog.info("doctor ${doctor.id} protected player ${target.id}")
 
         return state.copy(
             protectedPlayerId = target.id,

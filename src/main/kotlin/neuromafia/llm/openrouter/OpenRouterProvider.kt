@@ -10,11 +10,11 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
-import kotlinx.serialization.json.Json
 import neuromafia.llm.LlmProvider
 import neuromafia.llm.LlmRequest
 import neuromafia.llm.LlmResponse
 
+// posts
 class OpenRouterProvider(
     private val apiKey: String,
     private val model: String,
@@ -45,9 +45,8 @@ class OpenRouterProvider(
                 bearerAuth(apiKey)
                 contentType(ContentType.Application.Json)
 
-                // Optional OpenRouter headers. Helpful if later you want app attribution.
-                header("HTTP-Referer", "https://github.com")
-                header("X-Title", "Neuromafia")
+                // title for neuromafia
+                header("X-Title", "neuromafia")
 
                 setBody(openRouterRequest)
             }.body<OpenRouterChatResponse>()

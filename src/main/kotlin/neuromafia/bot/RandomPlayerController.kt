@@ -26,7 +26,7 @@ class RandomPlayerController(
 
         return PlayerAction.DaySpeech(
             playerId = playerId,
-            message = "Player $playerId says something suspicious.",
+            message = "player $playerId says something suspicious.",
             nominatedPlayerId = nominatedPlayerId
         )
     }
@@ -62,7 +62,7 @@ class RandomPlayerController(
             .filter { it.role.team != Team.MAFIA }
 
         require(candidates.isNotEmpty()) {
-            "No available mafia kill targets."
+            "no available mafia kill targets."
         }
 
         return PlayerAction.MafiaKillVote(
@@ -77,7 +77,7 @@ class RandomPlayerController(
         candidateIds: List<Int>
     ): PlayerAction.GodfatherKillDecision {
         require(candidateIds.isNotEmpty()) {
-            "No candidates for godfather kill decision."
+            "no candidates for godfather kill decision."
         }
 
         return PlayerAction.GodfatherKillDecision(
@@ -94,7 +94,7 @@ class RandomPlayerController(
             .filter { it.id != playerId }
 
         require(candidates.isNotEmpty()) {
-            "No available godfather check targets."
+            "no available godfather check targets."
         }
 
         return PlayerAction.GodfatherCommissarCheck(
@@ -111,7 +111,7 @@ class RandomPlayerController(
             .filter { it.id != playerId }
 
         require(candidates.isNotEmpty()) {
-            "No available commissar check targets."
+            "no available commissar check targets."
         }
 
         return PlayerAction.CommissarCheck(
@@ -127,7 +127,7 @@ class RandomPlayerController(
         val candidates = state.alivePlayers()
 
         require(candidates.isNotEmpty()) {
-            "No available doctor heal targets."
+            "no available doctor heal targets."
         }
 
         return PlayerAction.DoctorHeal(
@@ -144,7 +144,7 @@ class RandomPlayerController(
             .filter { it.id != playerId }
 
         require(candidates.isNotEmpty()) {
-            "No available escort visit targets."
+            "no available escort visit targets."
         }
 
         return PlayerAction.EscortVisit(
@@ -161,7 +161,7 @@ class RandomPlayerController(
             .filter { it.id != playerId }
 
         require(candidates.isNotEmpty()) {
-            "No available maniac kill targets."
+            "no available maniac kill targets."
         }
 
         return PlayerAction.ManiacKill(

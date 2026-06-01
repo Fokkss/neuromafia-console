@@ -125,4 +125,50 @@ class PromptHistoryFormatter {
             Phase.FINISHED -> "игра закончена"
         }
     }
+
+    fun formatCurrentDayDiscussion(
+        state: GameState,
+        language: LlmLanguage,
+        maxEvents: Int = 20
+    ): String {
+        val startIndex = state.eventLog.indexOfLast { event ->
+            event is GameEvent.PhaseChanged &&
+                    event.to == Phase.DAY_DISCUSSION &&
+                    event.dayNumber == state.dayNumber
+        }.let { index ->
+            if (index == -1) {
+                0
+            } else {
+                index + 1
+            }
+        }
+
+        val visibleEvents = state.eventLog
+            .drop(startIndex)
+            .mapNotNull { event ->
+                when (event) {
+                    is GameEvent.PlayerSpoke -> when (language) {
+                        LlmLanguage.EN -> "Player ${event.playerId} said: ${event.message}"
+                        LlmLanguage.RU -> "Игрок ${event.playerId} сказал: ${event.message}"
+                    }
+
+                    is GameEvent.PlayerNominated -> when (language) {
+                        LlmLanguage.EN -> "Player ${event.speakerId} nominated Player ${event.nominatedPlayerId}."
+                        LlmLanguage.RU -> "Игрок ${event.speakerId} выставил игрока ${event.nominatedPlayerId}."
+                    }
+
+                    else -> null
+                }
+            }
+            .takeLast(maxEvents)
+
+        if (visibleEvents.isEmpty()) {
+            return when (language) {
+                LlmLanguage.EN -> "No one has spoken yet today."
+                LlmLanguage.RU -> "Сегодня пока никто не говорил."
+            }
+        }
+
+        return visibleEvents.joinToString(separator = "\n")
+    }
 }

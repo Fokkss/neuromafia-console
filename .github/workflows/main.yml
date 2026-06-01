@@ -76,6 +76,12 @@ jobs:
       - name: Build distribution
         run: ./gradlew build -x test --no-daemon
 
+      - name: Build Docker image
+        run: docker build -t neuromafia:ci .
+
+      - name: Smoke test Docker image
+        run: docker run --rm neuromafia:ci --help
+
       - name: Upload test report
         if: always()
         uses: actions/upload-artifact@v4

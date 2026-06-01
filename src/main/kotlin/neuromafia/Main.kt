@@ -114,7 +114,7 @@ class NeuromafiaCommand : CliktCommand(
         val gameMode = when (mode) {
             "observe" -> GameMode.OBSERVE
             "human" -> GameMode.HUMAN
-            else -> error("Unknown game mode: $mode")
+            else -> error("unknown game mode: $mode")
         }
 
         val config = GameConfig(
@@ -130,8 +130,14 @@ class NeuromafiaCommand : CliktCommand(
             humanPlayerId = if (gameMode == GameMode.HUMAN) humanPlayer else null
         )
 
-        echo(messages.appStarted())
-        echo(messages.gameConfig(config))
+        if (gameMode == GameMode.HUMAN) {
+            require(humanPlayer in 1..players) {
+                "Human player id must be between 1 and $players."
+            }
+        }
+
+        println(messages.appStarted())
+        println(messages.gameConfig(config))
 
         if (!runGame) {
             printCreatedGame(config)
@@ -155,6 +161,7 @@ class NeuromafiaCommand : CliktCommand(
             "random" -> MafiaApplication().runRandomGame(
                 config = config,
                 maxRounds = maxRounds,
+                language = selectedLanguage,
                 onStateChanged = onStateChanged
             )
 
@@ -163,21 +170,23 @@ class NeuromafiaCommand : CliktCommand(
                 maxRounds = maxRounds,
                 provider = StubLlmProvider(
                     response = """
-                {
-                  "publicReasoning": "Stub LLM chooses Player 1 as a fallback.",
-                  "speech": "I am watching carefully.",
-                  "targetId": 1,
-                  "skip": false
-                }
-            """.trimIndent()
+                        {
+                          "publicReasoning": "Stub LLM chooses Player 1 as a fallback.",
+                          "speech": "I am watching carefully.",
+                          "targetId": 1,
+                          "skip": false
+                        }
+                    """.trimIndent()
                 ),
                 language = LlmLanguage.fromCliValue(language),
+                uiLanguage = selectedLanguage,
                 onStateChanged = onStateChanged
             )
 
             "llm" -> {
+                // only openrouter
                 require(provider == "openrouter") {
-                    "Only OpenRouter provider is supported now. Use --provider openrouter."
+                    "only OpenRouter provider is supported now, use --provider openrouter."
                 }
 
                 val httpClient = HttpClientFactory.create()
@@ -192,6 +201,7 @@ class NeuromafiaCommand : CliktCommand(
                             client = httpClient
                         ),
                         language = LlmLanguage.fromCliValue(language),
+                        uiLanguage = selectedLanguage,
                         onStateChanged = onStateChanged
                     )
                 } finally {
@@ -199,20 +209,21 @@ class NeuromafiaCommand : CliktCommand(
                 }
             }
 
-            else -> error("Unknown bot type: $bot")
+            else -> error("unknown bot type: $bot")
         }
 
         publicEventPrinter.printGameSummary(finalState)
+        publicEventPrinter.printRoleReveal(finalState)
     }
 
     private fun printCreatedGame(config: GameConfig) {
-        DevLog.info("Creating game state without running full game")
+        DevLog.info("creating game state without running full game")
 
         val state = GameFactory.create(config)
         val winner = WinConditionChecker.checkWinner(state)
 
         echo("")
-        echo("Created game:")
+        echo("created game:")
 
         state.players.forEach { player ->
             if (DevLog.enabled) {
@@ -223,9 +234,9 @@ class NeuromafiaCommand : CliktCommand(
         }
 
         echo("")
-        echo("Winner at start: ${winner ?: "none"}")
+        echo("winner at start: ${winner ?: "none"}")
         echo("")
-        echo("Use --run-game to run full simulation.")
+        echo("use --run-game to run full simulation.")
     }
 }
 

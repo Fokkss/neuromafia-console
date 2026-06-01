@@ -32,11 +32,24 @@ class PromptBuilder (
                 Public history:
                 ${historyFormatter.formatPublicHistory(state, language)}
 
+                Current day discussion so far:
+                ${historyFormatter.formatCurrentDayDiscussion(state, language)}
+                
+                Public history:
+                ${historyFormatter.formatPublicHistory(state, language)}
+
                 Already nominated players:
                 ${state.nominatedPlayerIds.ifEmpty { listOf("none") }}
 
                 Task:
                 Make a short day speech and optionally nominate one alive player.
+
+                You must react to the current public discussion.
+                If another player asked a direct public question or made a direct request, briefly acknowledge it in your speech.
+                Do not ignore previous public speeches.
+                Do not reveal hidden role information.
+                
+                If the game language is Russian, speech and publicReasoning must be in Russian.
 
                 Rules:
                 - Do not reveal hidden information unless your role really knows it.
@@ -83,11 +96,19 @@ class PromptBuilder (
                 Public history:
                 ${historyFormatter.formatPublicHistory(state, language)}
 
+                Current day discussion so far:
+                ${historyFormatter.formatCurrentDayDiscussion(state, language)}
+                
+                Public history:
+                ${historyFormatter.formatPublicHistory(state, language)}
+
                 You can vote only for nominated players:
                 $nominatedPlayerIds
 
                 Task:
                 Choose one nominated player to vote for or skip.
+                
+                Use the public discussion and nominations when choosing your vote.
 
                 Return ONLY valid JSON.
 
@@ -126,6 +147,12 @@ class PromptBuilder (
 
                 Alive players:
                 ${alivePlayersText(state)}
+                
+                Public history:
+                ${historyFormatter.formatPublicHistory(state, language)}
+                
+                Current day discussion:
+                ${historyFormatter.formatCurrentDayDiscussion(state, language)}
                 
                 Public history:
                 ${historyFormatter.formatPublicHistory(state, language)}

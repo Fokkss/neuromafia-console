@@ -84,7 +84,7 @@ class LlmPlayerController(
             promptBuilder.buildTargetChoiceRequest(
                 state = state,
                 playerId = playerId,
-                task = "Choose a non-mafia alive player for mafia night kill.",
+                task = "choose a non-mafia alive player for mafia night kill.",
                 allowedTargetIds = allowedTargets,
                 language = language
             )
@@ -105,7 +105,7 @@ class LlmPlayerController(
             promptBuilder.buildTargetChoiceRequest(
                 state = state,
                 playerId = playerId,
-                task = "Choose final mafia kill target from tied candidates.",
+                task = "choose final mafia kill target from tied candidates.",
                 allowedTargetIds = candidateIds,
                 language = language
             )
@@ -129,7 +129,7 @@ class LlmPlayerController(
             promptBuilder.buildTargetChoiceRequest(
                 state = state,
                 playerId = playerId,
-                task = "Choose one alive player to check whether he is COMMISSAR.",
+                task = "choose one alive player to check whether he is COMMISSAR.",
                 allowedTargetIds = allowedTargets,
                 language = language
             )
@@ -153,7 +153,7 @@ class LlmPlayerController(
             promptBuilder.buildTargetChoiceRequest(
                 state = state,
                 playerId = playerId,
-                task = "Choose one alive player to check whether he belongs to mafia team.",
+                task = "choose one alive player to check whether he belongs to mafia team.",
                 allowedTargetIds = allowedTargets,
                 language = language
             )
@@ -176,7 +176,7 @@ class LlmPlayerController(
             promptBuilder.buildTargetChoiceRequest(
                 state = state,
                 playerId = playerId,
-                task = "Choose one alive player to protect tonight.",
+                task = "choose one alive player to protect tonight.",
                 allowedTargetIds = allowedTargets,
                 language = language
             )
@@ -200,7 +200,8 @@ class LlmPlayerController(
             promptBuilder.buildTargetChoiceRequest(
                 state = state,
                 playerId = playerId,
-                task = "Choose one alive player to visit tonight. That player will not speak or vote the next day.",
+                task = "choose one alive player to visit tonight. " +
+                        "that player will not speak or vote the next day.",
                 allowedTargetIds = allowedTargets,
                 language = language
             )
@@ -224,7 +225,7 @@ class LlmPlayerController(
             promptBuilder.buildTargetChoiceRequest(
                 state = state,
                 playerId = playerId,
-                task = "Choose one alive player to kill tonight.",
+                task = "choose one alive player to kill tonight.",
                 allowedTargetIds = allowedTargets,
                 language = language
             )
@@ -238,23 +239,23 @@ class LlmPlayerController(
 
     private fun askAndParse(request: neuromafia.llm.LlmRequest): neuromafia.llm.LlmActionResponse {
         return try {
-            DevLog.info("Sending request to LLM")
+            DevLog.info("sending request to LLM")
 
             val response = runBlocking {
                 provider.ask(request)
             }
 
-            DevLog.info("Received response from LLM")
+            DevLog.info("received response from LLM")
 
             try {
                 parser.parse(response.content)
             } catch (exception: Exception) {
-                DevLog.info("Failed to parse LLM response, using fallback. Error: ${exception.message}")
+                DevLog.info("failed to parse LLM response, using fallback. Error: ${exception.message}")
 
                 fallbackActionResponse()
             }
         } catch (exception: Exception) {
-            DevLog.info("LLM request failed, using fallback. Error: ${exception.message}")
+            DevLog.info("LLM request failed, using fallback. error: ${exception.message}")
 
             fallbackActionResponse()
         }
@@ -313,14 +314,14 @@ class LlmPlayerController(
     private fun fallbackActionResponse(): neuromafia.llm.LlmActionResponse {
         return when (language) {
             LlmLanguage.EN -> neuromafia.llm.LlmActionResponse(
-                publicReasoning = "Fallback action because LLM response was invalid.",
+                publicReasoning = "fallback action because LLM response was invalid.",
                 speech = "I am not sure yet.",
                 targetId = null,
                 skip = true
             )
 
             LlmLanguage.RU -> neuromafia.llm.LlmActionResponse(
-                publicReasoning = "Запасное действие, потому что ответ LLM был некорректным.",
+                publicReasoning = "запасное действие, потому что ответ LLM был некорректным.",
                 speech = "Пока не уверен, нужно присмотреться.",
                 targetId = null,
                 skip = true
@@ -333,7 +334,7 @@ class LlmPlayerController(
         allowedTargetIds: List<Int>
     ): Int {
         require(allowedTargetIds.isNotEmpty()) {
-            "No allowed targets."
+            "no allowed targets."
         }
 
         if (targetId in allowedTargetIds) {

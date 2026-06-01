@@ -1,6 +1,6 @@
 package neuromafia.core.model
 
 enum class Team {
-    CIVILIANS,
+    CIVILIANS, // maniac is also civilian
     MAFIA
 }
